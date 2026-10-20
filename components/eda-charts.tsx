@@ -40,6 +40,18 @@ function formatearEje(v: number): string {
   return Number.isInteger(v) ? `${v}` : v.toFixed(1);
 }
 
+const ETIQUETA_SERIE: Record<string, string> = {
+  count: 'cantidad',
+  texto: 'Textos',
+  words: 'Palabras',
+  sentences: 'Oraciones',
+  vocabulary: 'Vocabulario',
+};
+
+function etiquetaSerie(clave: string): string {
+  return ETIQUETA_SERIE[clave] ?? clave;
+}
+
 /* ---------- barras agrupadas ---------- */
 
 export type SerieBarra = { clave: string; valores: number[]; color: string };
@@ -151,7 +163,7 @@ export function BarrasAgrupadas({
       {sel !== null && etiquetas[sel] !== undefined && (
         <Text className="mt-1 text-center text-xs text-slate-500">
           {etiquetas[sel]} ·{' '}
-          {series.map((s) => `${s.clave}: ${s.valores[sel ?? 0] ?? 0}`).join('  ')}
+          {series.map((s) => `${etiquetaSerie(s.clave)}: ${s.valores[sel ?? 0] ?? 0}`).join('  ')}
         </Text>
       )}
     </View>
@@ -176,7 +188,7 @@ export function EdaSentenceBoxPlot({ stats }: { stats: SentenceStats }) {
         <Text
           style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: '#64748b' }}
         >
-          Distribución de oraciones por texto (boxplot)
+          Distribución de oraciones por texto (diagrama de caja)
         </Text>
         <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 12, color: '#64748b' }}>
           n {count}
@@ -208,13 +220,13 @@ export function EdaSentenceBoxPlot({ stats }: { stats: SentenceStats }) {
         />
       </View>
       <View className="mt-1 flex-row flex-wrap gap-x-3 gap-y-1">
-        <Text style={{ fontSize: 11, color: '#64748b' }}>min {min}</Text>
+        <Text style={{ fontSize: 11, color: '#64748b' }}>mín {min}</Text>
         <Text style={{ fontSize: 11, color: '#64748b' }}>q25 {q25.toFixed(1)}</Text>
         <Text style={{ fontSize: 11, color: '#0f172a', fontFamily: 'Inter_500Medium' }}>
-          med {median}
+          mediana {median}
         </Text>
         <Text style={{ fontSize: 11, color: '#64748b' }}>q75 {q75.toFixed(1)}</Text>
-        <Text style={{ fontSize: 11, color: '#64748b' }}>max {max}</Text>
+        <Text style={{ fontSize: 11, color: '#64748b' }}>máx {max}</Text>
         <Text style={{ fontSize: 11, color: '#64748b' }}>
           μ {mean.toFixed(1)} ±{std.toFixed(1)}
         </Text>
@@ -255,9 +267,9 @@ export function EdaSentenceFreq({ data }: { data: SentenceFreqItem[] }) {
 const OPCIONES_METRICA = [
   { valor: 'all', etiqueta: 'Todos' },
   { valor: 'texto', etiqueta: 'Textos' },
-  { valor: 'words', etiqueta: 'Words' },
-  { valor: 'sentences', etiqueta: 'Sentences' },
-  { valor: 'vocabulary', etiqueta: 'Vocabulary' },
+  { valor: 'words', etiqueta: 'Palabras' },
+  { valor: 'sentences', etiqueta: 'Oraciones' },
+  { valor: 'vocabulary', etiqueta: 'Vocabulario' },
 ] as const;
 
 type Metrica = (typeof OPCIONES_METRICA)[number]['valor'];
@@ -292,7 +304,7 @@ export function EdaClassDistribution({ classStats }: { classStats: ClassStats[] 
         >
           {metrica === 'all'
             ? 'Distribución por clase (tocá para valores)'
-            : `Distribución por clase — ${metrica}`}
+            : `Distribución por clase — ${etiquetaSerie(metrica)}`}
         </Text>
         <View className="w-36">
           <Selector
@@ -310,7 +322,7 @@ export function EdaClassDistribution({ classStats }: { classStats: ClassStats[] 
         barraMax={metrica === 'all' ? 16 : 48}
       />
       <Text className="mt-1 text-center text-[11px] text-slate-500">
-        {metrica === 'all' ? 'texto · words · sentences · vocabulary' : `solo ${metrica} — escala ajustada`}
+        {metrica === 'all' ? 'texto · palabras · oraciones · vocabulario' : `solo ${etiquetaSerie(metrica)} — escala ajustada`}
       </Text>
     </View>
   );
@@ -353,7 +365,7 @@ export function EdaDistribution({ distribution }: { distribution: DistributionIt
               <Text
                 className={`text-xs ${modo === m ? 'text-white' : 'text-slate-500'}`}
               >
-                {m}
+                {m === 'words' ? 'palabras' : 'oraciones'}
               </Text>
             </Pressable>
           ))}

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "TFU",
+    "name": "PLASMA",
     "slug": "pi-unsl",
     "scheme": "plasma",
     "version": "1.0.0",
@@ -11,6 +11,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.unsl.plasma",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -27,8 +29,18 @@
         "projectId": "e4cb0a86-fd14-4371-b518-e91c8431e1e4"
       }
     },
-    "owner": "unsl"
+    "owner": "unsl",
+    "plugins": [
+      "expo-sharing",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true,
+            "enableMinifyInReleaseBuilds": false
+          }
+        }
+      ]
+    ]
   }
 }
-
-

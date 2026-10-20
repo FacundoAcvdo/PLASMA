@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, ScrollView, Switch, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Modal, Switch, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { File as FSFile, Paths } from 'expo-file-system';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,11 +12,13 @@ import {
   type DatasetOriginalFormat,
 } from '@/lib/dataset/autoConvert';
 import type { DatasetPreviewData } from '@/lib/dataset/types';
+import { etiquetaTipoColumna } from '@/lib/dataset/types';
 import { previewDataset } from '@/lib/dataset/preview';
 import { detectWhatsappLocale, type WhatsappLocale } from '@/lib/dataset/parsers/txt';
 import { DatasetPreview } from '@/components/DatasetPreview';
 import { Selector } from '@/components/Selector';
 import { Boton, CajaError, CajaExito, Campo, Screen, Subtitulo, Titulo } from '@/components/ui';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 type PosiblePreview = DatasetPreviewData & {
   sourceFormat?: AutoConvertSourceFormat;
@@ -411,15 +413,22 @@ export default function Upload() {
       }
       const formData = new FormData();
       // Nombre final elegido por el usuario (defecto "Dataset"), con la
-      // extensión real bloqueada. El POST lo hace startTask vía expo/fetch
-      // (ver apiFetchFormData), que respeta filename y MIME.
+      // extensión real bloqueada. expo/fetch arma el `filename` multipart a
+      // partir del `.name` nativo del File, que es de solo lectura y deriva
+      // del nombre en disco; el 3er argumento de append solo aplica a Blobs
+      // reales (un File de expo-file-system no lo es). Por eso copiamos a
+      // caché con el nombre final para que el backend reciba ese nombre.
       const baseFinal = sanitizarNombreUsuario(nombreDataset) || 'Dataset';
       const nombreFinal = `${baseFinal}.${extensionSubida}`;
-      formData.append(
-        'archivo',
-        new FSFile(archivoAEnviar.uri) as unknown as Blob,
-        nombreFinal,
-      );
+      const destino = new FSFile(Paths.cache, nombreFinal);
+      try {
+        if (destino.exists) destino.delete();
+        await new FSFile(archivoAEnviar.uri).copy(destino);
+      } catch {
+        // si no se pudo renombrar en caché, se sube con el nombre original
+      }
+      const uriEnvio = destino.exists ? destino.uri : archivoAEnviar.uri;
+      formData.append('archivo', new FSFile(uriEnvio) as unknown as Blob, nombreFinal);
       formData.append('columnaTexto', columnaTexto);
       if (!sinClasificar && columnaClase) formData.append('columnaClase', columnaClase);
       if (esDeChat && columnaFecha) formData.append('columnaFecha', columnaFecha);
@@ -455,12 +464,17 @@ export default function Upload() {
 
   const opcionesColumnas = columnas.map((c) => ({
     valor: c.name,
-    etiqueta: `${c.name} (${c.type})`,
+    etiqueta: `${c.name} (${etiquetaTipoColumna(c.type)})`,
   }));
 
   return (
     <Screen>
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1 }}
+        keyboardShouldPersistTaps="handled"
+        bottomOffset={20}
+      >
         <View className="gap-4 pb-10">
         <Titulo>Cargar dataset</Titulo>
         <Subtitulo>CSV, XLSX, TXT (WhatsApp), ZIP (carpetas por clase) · máx. 50 MB</Subtitulo>
@@ -659,7 +673,7 @@ export default function Upload() {
           </CajaExito>
         )}
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </Screen>
   );
 }

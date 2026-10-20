@@ -1,6 +1,6 @@
 // Registro de toasts: el <Toaster/> montado atiende estos avisos.
 // (En web esto lo hace sonner; acá un Toaster propio sin dependencias.)
-export type ToastKind = 'success' | 'error';
+export type ToastKind = 'success' | 'error' | 'info';
 
 type Listener = (kind: ToastKind, message: string) => void;
 
@@ -20,5 +20,8 @@ export const toast = {
   },
   error(message: string) {
     emit('error', message);
+  },
+  info(message: string) {
+    emit('info', message);
   },
 };

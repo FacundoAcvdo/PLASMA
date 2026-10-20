@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Text,
   type TextProps,
   TextInput,
@@ -32,12 +33,14 @@ export function Screen({ children }: { children: ReactNode }) {
 export function LogoHeader() {
   return (
     <View className="mr-4 flex-row items-center gap-2">
-      <View className="size-8 items-center justify-center rounded-lg bg-indigo-600">
-        <TextoBase style={{ color: '#fff', fontSize: 13, fontWeight: '700' }}>TF</TextoBase>
-      </View>
       <TextoBase style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
-        TFU
+        PLASMA
       </TextoBase>
+      <Image
+        source={require('@/assets/logo.png')}
+        style={{ width: 32, height: 32 }}
+        resizeMode="contain"
+      />
     </View>
   );
 }

@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { ChartColumn, RotateCw } from 'lucide-react-native';
 import { useDataset } from '@/context/dataset-context';
 import { useJobs } from '@/context/jobs-context';
-import { apiFetch } from '@/lib/api-fetch';
+import { apiFetch, ApiError } from '@/lib/api-fetch';
 import { Boton, Screen, Titulo } from '@/components/ui';
 import {
   EdaClassDistribution,
@@ -23,7 +23,7 @@ import type {
 
 // Espejo de TF-U-FRONTEND/components/views/stats-view.tsx:
 // mismo flujo (adopt/start/getResults) y mismo contenido por tarjeta.
-// Los gráficos de recharts se reimplementan con react-native-svg;
+// Los gráficos de recharts se reimplementan con Views puras (sin SVG);
 // el hover de web es tap-en-barra en mobile.
 
 type Estado = 'idle' | 'running' | 'done';
@@ -118,11 +118,11 @@ const COLUMNAS_CORPUS = [
   { titulo: 'Textos', alinear: 'right' },
   { titulo: 'Vocabulario', alinear: 'right' },
   { titulo: 'Palabras', alinear: 'right' },
-  { titulo: 'Palabras avg', alinear: 'right' },
+  { titulo: 'Palabras prom.', alinear: 'right' },
   { titulo: 'Oraciones', alinear: 'right' },
-  { titulo: 'Oraciones avg', alinear: 'right' },
-  { titulo: 'Oraciones min', alinear: 'right' },
-  { titulo: 'Oraciones max', alinear: 'right' },
+  { titulo: 'Oraciones prom.', alinear: 'right' },
+  { titulo: 'Oraciones mín', alinear: 'right' },
+  { titulo: 'Oraciones máx', alinear: 'right' },
 ] as const;
 
 const COLUMNAS_CLASE = [
@@ -130,11 +130,11 @@ const COLUMNAS_CLASE = [
   { titulo: 'Textos', alinear: 'left' },
   { titulo: 'Vocabulario', alinear: 'right' },
   { titulo: 'Palabras', alinear: 'right' },
-  { titulo: 'Palabras avg', alinear: 'right' },
+  { titulo: 'Palabras prom.', alinear: 'right' },
   { titulo: 'Oraciones', alinear: 'right' },
-  { titulo: 'Oraciones avg', alinear: 'right' },
-  { titulo: 'Oraciones min', alinear: 'right' },
-  { titulo: 'Oraciones max', alinear: 'right' },
+  { titulo: 'Oraciones prom.', alinear: 'right' },
+  { titulo: 'Oraciones mín', alinear: 'right' },
+  { titulo: 'Oraciones máx', alinear: 'right' },
 ] as const;
 
 export default function Estadisticas() {
@@ -226,7 +226,11 @@ export default function Estadisticas() {
           return;
         }
         if (aplicarResultado(data)) setEstado('done');
-      } catch {
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 404) {
+          setEstado('idle');
+          return;
+        }
         setError('No se pudieron cargar las estadísticas. Intentá nuevamente.');
         setEstado('idle');
       }
@@ -274,7 +278,7 @@ export default function Estadisticas() {
               ? 'Revisá la conexión y volvé a calcular las estadísticas.'
               : estado === 'running'
               ? 'Podés navegar a otra pantalla: te avisaremos con una notificación cuando termine.'
-              : 'Genera el resumen descriptivo del dataset cargado.'}
+              : 'Generá un panorama general de los textos cargados: cuántos documentos hay, cuántas palabras y oraciones contienen y cuántas palabras distintas aparecen. Sirve como primer diagnóstico para saber con qué datos trabajás y para comparar entre grupos antes de análisis más específicos.'}
           </Text>
           <View className="mt-4 w-full">
             <Boton
@@ -345,7 +349,7 @@ export default function Estadisticas() {
           {sentenceStats && sentenceFreq && (
             <Tarjeta
               titulo="Distribución de oraciones"
-              subtitulo="Boxplot + histograma — tocá las barras para detalles"
+              subtitulo="Diagrama de caja + histograma — tocá las barras para detalles"
             >
               <EdaSentenceBoxPlot stats={sentenceStats} />
               <EdaSentenceFreq data={sentenceFreq} />

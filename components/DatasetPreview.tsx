@@ -1,5 +1,6 @@
 import { ScrollView, Text, View } from 'react-native';
 import type { DatasetPreviewData } from '@/lib/dataset/types';
+import { etiquetaTipoColumna } from '@/lib/dataset/types';
 
 const ANCHO_COLUMNA = 160;
 const ALTO_MAXIMO_TABLA = 320;
@@ -59,7 +60,7 @@ export function DatasetPreview({ preview }: { preview: DatasetPreviewData }) {
                   {column.name || `Columna ${index + 1}`}
                 </Text>
                 <Text className="mt-0.5 text-[11px] uppercase tracking-wide text-slate-400">
-                  {column.type}
+                  {etiquetaTipoColumna(column.type)}
                 </Text>
               </View>
             ))}

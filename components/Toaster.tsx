@@ -43,7 +43,8 @@ export function Toaster() {
   }, [anim, timer]);
 
   if (!aviso) return null;
-  const esExito = aviso.kind === 'success';
+  const fondo =
+    aviso.kind === 'success' ? 'bg-emerald-600' : aviso.kind === 'info' ? 'bg-indigo-600' : 'bg-red-600';
 
   return (
     <View
@@ -61,7 +62,7 @@ export function Toaster() {
           shadowOffset: { width: 0, height: 2 },
           elevation: 6,
         }}
-        className={`w-full rounded-xl px-4 py-3 ${esExito ? 'bg-emerald-600' : 'bg-red-600'}`}
+        className={`w-full rounded-xl px-4 py-3 ${fondo}`}
       >
         <Text className="text-center text-sm font-semibold text-white">{aviso.message}</Text>
       </Animated.View>

@@ -12,6 +12,7 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { DatasetProvider } from '@/context/dataset-context';
 import { JobsProvider } from '@/context/jobs-context';
 import { MenuLateral } from '@/components/MenuLateral';
@@ -44,37 +45,57 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <JobsProvider>
-            <DatasetProvider>
-              <StatusBar style="dark" />
-              <Drawer
-                drawerContent={({ navigation }) => <MenuLateral navigation={navigation} />}
-                screenOptions={{
-                  headerTintColor: '#0f172a',
-                  headerTitleStyle: { fontFamily: 'Inter_600SemiBold' },
-                  headerTitle: '',
-                  headerRight: () => <LogoHeader />,
-                  drawerStyle: { width: 300 },
-                }}
-              >
-                <Drawer.Screen
-                  name="index"
-                  options={{ drawerItemStyle: { display: 'none' }, headerShown: false }}
-                />
-                <Drawer.Screen
-                  name="login"
-                  options={{ drawerItemStyle: { display: 'none' }, headerShown: false }}
-                />
-                <Drawer.Screen name="datasets" options={{ title: 'Datasets' }} />
-                <Drawer.Screen name="upload" options={{ title: 'Cargar dataset' }} />
-                <Drawer.Screen name="func/estadisticas" options={{ title: 'Estadísticas' }} />
-                <Drawer.Screen name="func/[id]" options={{ title: 'Sección' }} />
-              </Drawer>
-              <Toaster />
-            </DatasetProvider>
-          </JobsProvider>
-        </QueryClientProvider>
+        <KeyboardProvider>
+          <QueryClientProvider client={queryClient}>
+            <JobsProvider>
+              <DatasetProvider>
+                <StatusBar style="dark" />
+                <Drawer
+                  drawerContent={({ navigation }) => <MenuLateral navigation={navigation} />}
+                  screenOptions={{
+                    headerTintColor: '#0f172a',
+                    headerTitleStyle: { fontFamily: 'Inter_600SemiBold' },
+                    headerTitle: '',
+                    headerRight: () => <LogoHeader />,
+                    drawerStyle: { width: 300 },
+                  }}
+                >
+                  <Drawer.Screen
+                    name="index"
+                    options={{ drawerItemStyle: { display: 'none' }, headerShown: false }}
+                  />
+                  <Drawer.Screen
+                    name="login"
+                    options={{ drawerItemStyle: { display: 'none' }, headerShown: false }}
+                  />
+                  <Drawer.Screen name="datasets" options={{ title: 'Datasets' }} />
+                  <Drawer.Screen name="upload" options={{ title: 'Cargar dataset' }} />
+                  <Drawer.Screen name="func/estadisticas" options={{ title: 'Estadísticas' }} />
+                  <Drawer.Screen name="func/limpieza" options={{ title: 'Limpieza de datos' }} />
+                  <Drawer.Screen name="func/embeddings" options={{ title: 'Embeddings' }} />
+                  <Drawer.Screen name="func/nube" options={{ title: 'Nube de palabras' }} />
+                  <Drawer.Screen name="func/emociones" options={{ title: 'Emociones' }} />
+                  <Drawer.Screen name="func/topicos" options={{ title: 'Tópicos' }} />
+                  <Drawer.Screen name="func/evolucion" options={{ title: 'Evolución de palabras' }} />
+                  <Drawer.Screen name="func/sentimientos" options={{ title: 'Sentimientos en el tiempo' }} />
+                  <Drawer.Screen name="func/mencion" options={{ title: 'Construir clasificador' }} />
+                  <Drawer.Screen name="func/riesgo" options={{ title: 'Nivel de riesgo' }} />
+                  <Drawer.Screen name="func/chatbot" options={{ title: 'Chatbot general' }} />
+                  <Drawer.Screen name="func/chatbot-dataset" options={{ title: 'Chatbot dataset' }} />
+                  <Drawer.Screen name="func/historial" options={{ title: 'Historial de chats' }} />
+                  <Drawer.Screen name="func/informes" options={{ title: 'Generar informes' }} />
+                  <Drawer.Screen name="func/usuarios" options={{ title: 'Gestión de usuarios' }} />
+                  <Drawer.Screen
+                    name="func/almacenamiento"
+                    options={{ title: 'Almacenamiento' }}
+                  />
+                  <Drawer.Screen name="func/[id]" options={{ title: 'Sección' }} />
+                </Drawer>
+                <Toaster />
+              </DatasetProvider>
+            </JobsProvider>
+          </QueryClientProvider>
+        </KeyboardProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
