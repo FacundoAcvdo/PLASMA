@@ -35,6 +35,7 @@ import {
   type ResumenMenciones,
 } from '@/lib/classification/types';
 import { descargarModelo } from '@/lib/classification/descarga';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/mention-view.tsx: mismo flujo
 // (adopt/start) y mismo contenido. El slider web de % de entrenamiento se
@@ -67,14 +68,14 @@ function CheckRow({
     >
       <View
         className={`mt-0.5 size-5 items-center justify-center rounded border ${
-          checked ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300 bg-white'
+          checked ? 'border-primario bg-primario dark:bg-primario-500' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900'
         }`}
       >
         {checked && <Check size={13} color="#ffffff" />}
       </View>
       <View className="flex-1">
-        <Text className="text-sm text-slate-900">{label}</Text>
-        {hint ? <Text className="mt-0.5 text-xs text-slate-500">{hint}</Text> : null}
+        <Text className="text-sm text-slate-900 dark:text-slate-100">{label}</Text>
+        {hint ? <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{hint}</Text> : null}
       </View>
     </TouchableOpacity>
   );
@@ -82,9 +83,9 @@ function CheckRow({
 
 function TiraStat({ etiqueta, valor }: { etiqueta: string; valor: number }) {
   return (
-    <View className="flex-1 items-center rounded-lg border border-slate-200 bg-slate-50/60 px-2 py-2.5">
-      <Text className="text-center text-[11px] text-slate-500">{etiqueta}</Text>
-      <Text className="mt-0.5 text-sm text-slate-900" style={{ fontFamily: FUENTE.semibold }}>
+    <View className="flex-1 items-center rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 px-2 py-2.5">
+      <Text className="text-center text-[11px] text-slate-500 dark:text-slate-400">{etiqueta}</Text>
+      <Text className="mt-0.5 text-sm text-slate-900 dark:text-slate-100" style={{ fontFamily: FUENTE.semibold }}>
         {valor.toLocaleString()}
       </Text>
     </View>
@@ -93,9 +94,9 @@ function TiraStat({ etiqueta, valor }: { etiqueta: string; valor: number }) {
 
 function Metrica({ etiqueta, valor }: { etiqueta: string; valor: number }) {
   return (
-    <View className="w-[48%] items-center rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-2.5">
-      <Text className="text-xs text-slate-500">{etiqueta}</Text>
-      <Text className="mt-0.5 text-sm text-slate-900" style={{ fontFamily: FUENTE.semibold }}>
+    <View className="w-[48%] items-center rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 px-3 py-2.5">
+      <Text className="text-xs text-slate-500 dark:text-slate-400">{etiqueta}</Text>
+      <Text className="mt-0.5 text-sm text-slate-900 dark:text-slate-100" style={{ fontFamily: FUENTE.semibold }}>
         {formatearPorcentaje(valor)}
       </Text>
     </View>
@@ -105,24 +106,24 @@ function Metrica({ etiqueta, valor }: { etiqueta: string; valor: number }) {
 function MatrizConfusion({ resumen }: { resumen: ResumenMenciones }) {
   return (
     <View className="w-full items-center gap-2">
-      <Text className="text-center text-xs text-slate-500" style={{ fontFamily: FUENTE.medium }}>
+      <Text className="text-center text-xs text-slate-500 dark:text-slate-400" style={{ fontFamily: FUENTE.medium }}>
         Matriz de Confusión (Filas: Real, Columnas: Predicha)
       </Text>
-      <View className="w-full overflow-hidden rounded-lg border border-slate-200 bg-slate-50/40">
+      <View className="w-full overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-800/30">
         <View className="flex-row">
-          <View className="w-24 justify-center border-b border-r border-slate-200 bg-slate-100 px-2 py-2">
-            <Text className="text-[10px] text-slate-500" style={{ fontFamily: FUENTE.semibold }}>
+          <View className="w-24 justify-center border-b border-r border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 px-2 py-2">
+            <Text className="text-[10px] text-slate-500 dark:text-slate-400" style={{ fontFamily: FUENTE.semibold }}>
               Real \ Predicha
             </Text>
           </View>
           {resumen.clases.map((clase, idx) => (
             <View
               key={`h-${idx}`}
-              className="flex-1 justify-center border-b border-r border-slate-200 bg-slate-100 px-1 py-2"
+              className="flex-1 justify-center border-b border-r border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 px-1 py-2"
             >
               <Text
                 numberOfLines={1}
-                className="text-center text-[11px] text-slate-900"
+                className="text-center text-[11px] text-slate-900 dark:text-slate-100"
                 style={{ fontFamily: FUENTE.medium }}
               >
                 {clase}
@@ -133,10 +134,10 @@ function MatrizConfusion({ resumen }: { resumen: ResumenMenciones }) {
 
         {resumen.matriz_confusion.map((fila, i) => (
           <View key={`f-${i}`} className="flex-row">
-            <View className="w-24 justify-center border-b border-r border-slate-200 bg-slate-100 px-2 py-2">
+            <View className="w-24 justify-center border-b border-r border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800 px-2 py-2">
               <Text
                 numberOfLines={1}
-                className="text-[11px] text-slate-900"
+                className="text-[11px] text-slate-900 dark:text-slate-100"
                 style={{ fontFamily: FUENTE.medium }}
               >
                 {resumen.clases[i]}
@@ -147,17 +148,17 @@ function MatrizConfusion({ resumen }: { resumen: ResumenMenciones }) {
               return (
                 <View
                   key={`c-${i}-${j}`}
-                  className={`flex-1 items-center justify-center border-b border-r border-slate-200 py-2 ${
-                    esDiagonal ? 'bg-indigo-50' : valor > 0 ? 'bg-red-50' : 'bg-white'
+                  className={`flex-1 items-center justify-center border-b border-r border-slate-200 dark:border-slate-800 py-2 ${
+                    esDiagonal ? 'bg-primario-50 dark:bg-primario-950' : valor > 0 ? 'bg-red-50 dark:bg-red-950' : 'bg-white dark:bg-slate-900'
                   }`}
                 >
                   <Text
                     className={`text-xs ${
                       esDiagonal
-                        ? 'text-indigo-700'
+                        ? 'text-primario-700 dark:text-primario-300'
                         : valor > 0
-                          ? 'text-red-600'
-                          : 'text-slate-400'
+                          ? 'text-red-600 dark:text-red-300'
+                          : 'text-slate-400 dark:text-slate-500'
                     }`}
                     style={{ fontFamily: esDiagonal || valor > 0 ? FUENTE.semibold : FUENTE.regular }}
                   >
@@ -174,6 +175,7 @@ function MatrizConfusion({ resumen }: { resumen: ResumenMenciones }) {
 }
 
 export default function Clasificador() {
+  const { colores } = useTema();
   const router = useRouter();
   const { datasetSeleccionado } = useDataset();
   const { tasks, startTask, adoptTask, consumeTask } = useJobs();
@@ -313,7 +315,7 @@ export default function Clasificador() {
     return (
       <Screen>
         <Titulo>Construir clasificador</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Seleccioná un dataset clasificado para entrenar el modelo.
         </Text>
         <Boton titulo="Elegir dataset" onPress={() => router.push('/datasets')} />
@@ -337,27 +339,27 @@ export default function Clasificador() {
               <View className="flex-row items-center justify-between gap-3">
                 <View className="flex-row items-center gap-2">
                   <View className="size-2 rounded-full bg-emerald-500" />
-                  <Text className="text-sm text-slate-500">Modelo entrenado</Text>
+                  <Text className="text-sm text-slate-500 dark:text-slate-400">Modelo entrenado</Text>
                 </View>
                 <TouchableOpacity
                   onPress={handleReset}
-                  className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2"
+                  className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2"
                 >
-                  <Settings2 size={14} color="#0f172a" />
-                  <Text className="text-sm text-slate-900">Cambiar configuración</Text>
+                  <Settings2 size={14} color={colores.texto} />
+                  <Text className="text-sm text-slate-900 dark:text-slate-100">Cambiar configuración</Text>
                 </TouchableOpacity>
               </View>
 
-              <View className="rounded-xl border border-slate-200 bg-white">
-                <View className="flex-row flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3">
-                  <Text style={{ fontFamily: FUENTE.semibold, fontSize: 14, color: '#0f172a' }}>
+              <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <View className="flex-row flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 px-4 py-3">
+                  <Text style={{ fontFamily: FUENTE.semibold, fontSize: 14, color: colores.texto }}>
                     Resultados del análisis
                   </Text>
-                  <View className="flex-row items-center gap-1.5 rounded-md bg-slate-100 px-2.5 py-1">
-                    <Database size={13} color="#64748b" />
-                    <Text className="text-xs text-slate-500">
+                  <View className="flex-row items-center gap-1.5 rounded-md bg-slate-100 dark:bg-slate-800 px-2.5 py-1">
+                    <Database size={13} color={colores.textoSuave} />
+                    <Text className="text-xs text-slate-500 dark:text-slate-400">
                       Muestras procesadas:{' '}
-                      <Text className="text-slate-900" style={{ fontFamily: FUENTE.semibold }}>
+                      <Text className="text-slate-900 dark:text-slate-100" style={{ fontFamily: FUENTE.semibold }}>
                         {resultado.total_muestras.toLocaleString()}
                       </Text>
                     </Text>
@@ -382,22 +384,22 @@ export default function Clasificador() {
                 </View>
               </View>
 
-              <View className="flex-row items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
+              <View className="flex-row items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3">
                 <View className="min-w-0 flex-1 flex-row items-center gap-2.5">
-                  <FileCode2 size={16} color="#4f46e5" />
-                  <Text numberOfLines={1} className="flex-1 text-xs text-slate-900">
+                  <FileCode2 size={16} color={colores.primario} />
+                  <Text numberOfLines={1} className="flex-1 text-xs text-slate-900 dark:text-slate-100">
                     {nombreArchivo}
                   </Text>
                 </View>
                 <TouchableOpacity
                   onPress={handleDescargar}
                   disabled={!modelId || descargando}
-                  className={`flex-row items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 ${
+                  className={`flex-row items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 ${
                     !modelId || descargando ? 'opacity-50' : ''
                   }`}
                 >
-                  <Download size={14} color="#0f172a" />
-                  <Text className="text-xs text-slate-900">
+                  <Download size={14} color={colores.texto} />
+                  <Text className="text-xs text-slate-900 dark:text-slate-100">
                     {descargando ? 'Descargando…' : 'Descargar modelo'}
                   </Text>
                 </TouchableOpacity>
@@ -406,9 +408,9 @@ export default function Clasificador() {
           ) : (
             <>
               {/* Configuración */}
-              <View className="rounded-xl border border-slate-200 bg-white">
-                <View className="border-b border-slate-100 px-4 py-4">
-                  <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+              <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <View className="border-b border-slate-100 dark:border-slate-800 px-4 py-4">
+                  <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                     Configuración de análisis
                   </Text>
                 </View>
@@ -441,7 +443,7 @@ export default function Clasificador() {
                         onCambiar={setPorcentajeTrain}
                         deshabilitado={estado !== 'idle'}
                       />
-                      <Text className="mt-1.5 text-xs text-slate-500">
+                      <Text className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
                         Entrenamiento: {porcentajeEntrenamiento}% · Prueba: {porcentajePrueba}%
                       </Text>
                     </View>
@@ -459,9 +461,9 @@ export default function Clasificador() {
                   )}
 
                   {esBert && (
-                    <View className="flex-row items-start gap-2.5 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5">
-                      <Info size={14} color="#64748b" />
-                      <Text className="flex-1 text-xs text-slate-500">
+                    <View className="flex-row items-start gap-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3.5 py-2.5">
+                      <Info size={14} color={colores.textoSuave} />
+                      <Text className="flex-1 text-xs text-slate-500 dark:text-slate-400">
                         BERT reentrena la red completa sobre los textos del dataset. Puede demorar
                         bastante tiempo (más aún con validación cruzada) y el archivo resultante pesa
                         cientos de megabytes.
@@ -469,7 +471,7 @@ export default function Clasificador() {
                     </View>
                   )}
 
-                  <View className="gap-3 rounded-lg border border-slate-200 px-3.5 py-3">
+                  <View className="gap-3 rounded-lg border border-slate-200 dark:border-slate-800 px-3.5 py-3">
                     <CheckRow
                       checked={modificarParams}
                       onChange={setModificarParams}
@@ -571,19 +573,19 @@ export default function Clasificador() {
               </View>
 
               {/* Runner */}
-              <View className="items-center rounded-xl border border-slate-200 bg-white px-6 py-14">
-                <View className="size-14 items-center justify-center rounded-2xl bg-indigo-50">
-                  <ShieldAlert size={24} color="#4f46e5" />
+              <View className="items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-14">
+                <View className="size-14 items-center justify-center rounded-2xl bg-primario-50 dark:bg-primario-950">
+                  <ShieldAlert size={24} color={colores.primario} />
                 </View>
                 <Text
-                  className="mt-4 text-center text-sm text-slate-900"
+                  className="mt-4 text-center text-sm text-slate-900 dark:text-slate-100"
                   style={{ fontFamily: FUENTE.medium }}
                 >
                   {estado === 'running'
                     ? 'Esperando resultados…'
                     : 'Esta operación no se ejecuta automáticamente'}
                 </Text>
-                <Text className="mt-1 max-w-md text-center text-sm text-slate-500">
+                <Text className="mt-1 max-w-md text-center text-sm text-slate-500 dark:text-slate-400">
                   {estado === 'running'
                     ? 'Podés navegar a otra pantalla: te avisaremos con una notificación cuando termine.'
                     : IDLE_HINT}

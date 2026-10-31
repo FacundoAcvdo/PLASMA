@@ -19,7 +19,7 @@ export default function Datasets() {
         keyExtractor={(item) => item.dataset_id}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={() => { refetch(); }} />}
         ListEmptyComponent={
-          <Text className="py-10 text-center text-sm text-slate-500">
+          <Text className="py-10 text-center text-sm text-slate-500 dark:text-slate-400">
             Todavía no hay datasets cargados.
           </Text>
         }
@@ -29,11 +29,11 @@ export default function Datasets() {
             <TouchableOpacity
               onPress={() => setDatasetSeleccionado(item.dataset_name)}
               className={`mb-2 rounded-xl border px-4 py-3 ${
-                seleccionado ? 'border-indigo-600 bg-indigo-50' : 'border-slate-200 bg-white'
+                seleccionado ? 'border-primario bg-primario-50 dark:bg-primario-950' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
               }`}
             >
-              <Text className="text-base font-semibold text-slate-900">{item.dataset_name}</Text>
-              <Text className="text-xs text-slate-500">
+              <Text className="text-base font-semibold text-slate-900 dark:text-slate-100">{item.dataset_name}</Text>
+              <Text className="text-xs text-slate-500 dark:text-slate-400">
                 {(item.dataset_size / 1024).toFixed(1)} KB · {item.embedding_size} embeddings
               </Text>
             </TouchableOpacity>

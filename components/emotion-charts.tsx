@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { FUENTE } from '@/components/ui';
+import { useTema } from '@/context/tema-context';
 import {
   ETIQUETA_METRICA,
   etiquetaEmocion,
@@ -16,16 +17,14 @@ import {
 // Gráficos con Views puras (como EDA). El hover de web es tap-en-elemento:
 // al tocar se resalta y aparece un panel de detalle debajo.
 
-const AZUL = '#2563eb';
-const TINTE = '#4f46e5';
-
 function SinDatos() {
-  return <Text className="py-4 text-center text-sm text-slate-500">Sin datos</Text>;
+  return <Text className="py-4 text-center text-sm text-slate-500 dark:text-slate-400">Sin datos</Text>;
 }
 
 /* ---------- corpus: barras horizontales (media) ---------- */
 
 export function EmotionCorpusMeanBars({ corpusStats }: { corpusStats: CorpusStats }) {
+  const { colores } = useTema();
   const data = useMemo(
     () =>
       Object.entries(corpusStats)
@@ -57,23 +56,23 @@ export function EmotionCorpusMeanBars({ corpusStats }: { corpusStats: CorpusStat
               key={d.emotion}
               onPress={() => setSel(activo ? null : d.emotion)}
               className={`flex-row items-center gap-2 rounded-md px-1 py-1 ${
-                activo ? 'bg-slate-50' : ''
+                activo ? 'bg-slate-50 dark:bg-slate-900' : ''
               }`}
             >
               <Text
                 numberOfLines={1}
-                className="text-xs text-slate-700"
+                className="text-xs text-slate-700 dark:text-slate-300"
                 style={{ width: 92, fontFamily: FUENTE.medium }}
               >
                 {etiquetaEmocion(d.emotion)}
               </Text>
-              <View className="h-2.5 flex-1 overflow-hidden rounded-sm bg-slate-100">
+              <View className="h-2.5 flex-1 overflow-hidden rounded-sm bg-slate-100 dark:bg-slate-800">
                 <View
                   className="h-full rounded-sm"
-                  style={{ width: `${(d.mean / xMax) * 100}%`, backgroundColor: AZUL, opacity: 0.9 }}
+                  style={{ width: `${(d.mean / xMax) * 100}%`, backgroundColor: colores.info, opacity: 0.9 }}
                 />
               </View>
-              <Text className="font-mono text-[10px] text-slate-500" style={{ width: 42, textAlign: 'right' }}>
+              <Text className="font-mono text-[10px] text-slate-500 dark:text-slate-400" style={{ width: 42, textAlign: 'right' }}>
                 {d.mean.toFixed(3)}
               </Text>
             </Pressable>
@@ -82,18 +81,18 @@ export function EmotionCorpusMeanBars({ corpusStats }: { corpusStats: CorpusStat
       </View>
 
       {selItem && (
-        <View className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
-          <Text className="text-xs font-medium text-slate-900">{etiquetaEmocion(selItem.emotion)}</Text>
-          <Text className="mt-0.5 font-mono text-[11px] text-slate-500">
-            media <Text className="text-slate-900">{selItem.mean.toFixed(3)}</Text> ±{selItem.std.toFixed(3)}
+        <View className="mt-2 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3 py-2">
+          <Text className="text-xs font-medium text-slate-900 dark:text-slate-100">{etiquetaEmocion(selItem.emotion)}</Text>
+          <Text className="mt-0.5 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+            media <Text className="text-slate-900 dark:text-slate-100">{selItem.mean.toFixed(3)}</Text> ±{selItem.std.toFixed(3)}
           </Text>
-          <Text className="font-mono text-[11px] text-slate-500">
-            mediana <Text className="text-slate-900">{selItem.median.toFixed(3)}</Text> · n {selItem.count}
+          <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+            mediana <Text className="text-slate-900 dark:text-slate-100">{selItem.median.toFixed(3)}</Text> · n {selItem.count}
           </Text>
         </View>
       )}
 
-      <Text className="mt-2 text-center text-[11px] text-slate-500">
+      <Text className="mt-2 text-center text-[11px] text-slate-500 dark:text-slate-400">
         ordenado por media descendente · tocá para ver desv. est. y mediana
       </Text>
     </View>
@@ -114,10 +113,10 @@ function BoxPlotMini({ item }: { item: DistributionItem }) {
 
   return (
     <View className="relative h-5 w-full">
-      <View style={{ position: 'absolute', top: '50%', height: 1, left: 0, right: 0 }} className="bg-slate-200" />
+      <View style={{ position: 'absolute', top: '50%', height: 1, left: 0, right: 0 }} className="bg-slate-200 dark:bg-slate-700" />
       <View
         style={{ position: 'absolute', top: '50%', height: 1, left: `${min}%`, width: `${max - min}%` }}
-        className="bg-slate-400/50"
+        className="bg-slate-400/50 dark:bg-slate-500/50"
       />
       <View
         style={{
@@ -128,11 +127,11 @@ function BoxPlotMini({ item }: { item: DistributionItem }) {
           left: `${q25}%`,
           width: `${Math.max(1.5, q75 - q25)}%`,
         }}
-        className="rounded-[3px] border border-slate-300 bg-slate-100"
+        className="rounded-[3px] border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800"
       />
       <View
         style={{ position: 'absolute', top: '50%', height: 12, width: 1, marginTop: -6, left: `${median}%` }}
-        className="bg-slate-900"
+        className="bg-slate-900 dark:bg-slate-100"
       />
       <View
         style={{
@@ -145,7 +144,7 @@ function BoxPlotMini({ item }: { item: DistributionItem }) {
           left: `${mean}%`,
           transform: [{ rotate: '45deg' }],
         }}
-        className="border border-slate-900 bg-white"
+        className="border border-slate-900 dark:border-slate-100 bg-white dark:bg-slate-900"
       />
     </View>
   );
@@ -159,13 +158,13 @@ export function EmotionDistributionList({ distribution }: { distribution: Distri
 
   return (
     <View className="w-full">
-      <View className="rounded-lg border border-slate-200 bg-white">
-        <View className="flex-row items-center gap-2 border-b border-slate-100 bg-slate-50 px-3 py-2">
-          <Text className="text-[11px] font-medium text-slate-500" style={{ width: 96 }}>
+      <View className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <View className="flex-row items-center gap-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3 py-2">
+          <Text className="text-[11px] font-medium text-slate-500 dark:text-slate-400" style={{ width: 96 }}>
             emoción
           </Text>
-          <Text className="flex-1 text-[11px] font-medium text-slate-500">distribución</Text>
-          <Text className="text-right text-[11px] font-medium text-slate-500" style={{ width: 78 }}>
+          <Text className="flex-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">distribución</Text>
+          <Text className="text-right text-[11px] font-medium text-slate-500 dark:text-slate-400" style={{ width: 78 }}>
             media
           </Text>
         </View>
@@ -175,56 +174,56 @@ export function EmotionDistributionList({ distribution }: { distribution: Distri
             <Pressable
               key={d.emotion}
               onPress={() => setSel(activo ? null : d.emotion)}
-              className={`flex-row items-center gap-2 border-b border-slate-50 px-3 py-2.5 ${
-                activo ? 'bg-slate-50' : ''
+              className={`flex-row items-center gap-2 border-b border-slate-50 dark:border-slate-800 px-3 py-2.5 ${
+                activo ? 'bg-slate-50 dark:bg-slate-900' : ''
               }`}
             >
-              <Text numberOfLines={1} className="text-xs text-slate-900" style={{ width: 96 }}>
+              <Text numberOfLines={1} className="text-xs text-slate-900 dark:text-slate-100" style={{ width: 96 }}>
                 {etiquetaEmocion(d.emotion)}
               </Text>
               <View className="flex-1">
                 <BoxPlotMini item={d} />
               </View>
-              <Text className="text-right font-mono text-[11px] text-slate-900" style={{ width: 78 }}>
+              <Text className="text-right font-mono text-[11px] text-slate-900 dark:text-slate-100" style={{ width: 78 }}>
                 {d.stats.mean.toFixed(3)}
-                <Text className="text-slate-500"> ±{d.stats.std.toFixed(2)}</Text>
+                <Text className="text-slate-500 dark:text-slate-400"> ±{d.stats.std.toFixed(2)}</Text>
               </Text>
             </Pressable>
           );
         })}
-        <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1 bg-slate-50 px-3 py-2">
+        <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1 bg-slate-50 dark:bg-slate-900 px-3 py-2">
           <View className="flex-row items-center gap-1.5">
-            <View className="h-2.5 w-3 rounded-[2px] border border-slate-300 bg-slate-100" />
-            <Text className="text-[11px] text-slate-500">q25–q75</Text>
+            <View className="h-2.5 w-3 rounded-[2px] border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800" />
+            <Text className="text-[11px] text-slate-500 dark:text-slate-400">q25–q75</Text>
           </View>
           <View className="flex-row items-center gap-1.5">
-            <View className="h-2.5 w-px bg-slate-900" />
-            <Text className="text-[11px] text-slate-500">mediana</Text>
+            <View className="h-2.5 w-px bg-slate-900 dark:bg-slate-100" />
+            <Text className="text-[11px] text-slate-500 dark:text-slate-400">mediana</Text>
           </View>
           <View className="flex-row items-center gap-1.5">
-            <View className="size-1.5 rotate-45 border border-slate-900 bg-white" />
-            <Text className="text-[11px] text-slate-500">media</Text>
+            <View className="size-1.5 rotate-45 border border-slate-900 dark:border-slate-100 bg-white dark:bg-slate-900" />
+            <Text className="text-[11px] text-slate-500 dark:text-slate-400">media</Text>
           </View>
-          <Text className="ml-auto font-mono text-[10px] text-slate-500">escala 0 — 1</Text>
+          <Text className="ml-auto font-mono text-[10px] text-slate-500 dark:text-slate-400">escala 0 — 1</Text>
         </View>
       </View>
 
       {item && (
-        <View className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
-          <Text className="text-sm font-medium text-slate-900">{etiquetaEmocion(item.emotion)}</Text>
+        <View className="mt-2 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3 py-2">
+          <Text className="text-sm font-medium text-slate-900 dark:text-slate-100">{etiquetaEmocion(item.emotion)}</Text>
           <View className="mt-1.5 flex-row flex-wrap gap-x-4 gap-y-0.5">
-            <Text className="font-mono text-[11px] text-slate-500">media {item.stats.mean.toFixed(3)}</Text>
-            <Text className="font-mono text-[11px] text-slate-500">±{item.stats.std.toFixed(3)}</Text>
-            <Text className="font-mono text-[11px] text-slate-500">mediana {item.stats.median.toFixed(3)}</Text>
-            <Text className="font-mono text-[11px] text-slate-500">n {item.stats.count}</Text>
-            <Text className="font-mono text-[11px] text-slate-500">q25 {item.stats.q25.toFixed(3)}</Text>
-            <Text className="font-mono text-[11px] text-slate-500">q75 {item.stats.q75.toFixed(3)}</Text>
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">media {item.stats.mean.toFixed(3)}</Text>
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">±{item.stats.std.toFixed(3)}</Text>
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">mediana {item.stats.median.toFixed(3)}</Text>
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">n {item.stats.count}</Text>
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">q25 {item.stats.q25.toFixed(3)}</Text>
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">q75 {item.stats.q75.toFixed(3)}</Text>
           </View>
           <View className="mt-2 h-7 flex-row items-end gap-px">
             {item.histogram.map((h, i) => (
               <View
                 key={i}
-                className="flex-1 rounded-[1px] bg-slate-900/15"
+                className="flex-1 rounded-[1px] bg-slate-900/15 dark:bg-slate-100/15"
                 style={{ height: `${(h.count / maxBin) * 100}%` }}
               />
             ))}
@@ -251,6 +250,7 @@ export function EmotionCorrelationHeatmap({
   correlation: Correlation;
   topWords?: Record<string, string[]>;
 }) {
+  const { colores } = useTema();
   const { matrix, order } = correlation;
   const [sel, setSel] = useState<{ x: string; y: string; v: number } | null>(null);
 
@@ -259,12 +259,12 @@ export function EmotionCorrelationHeatmap({
   return (
     <View className="w-full">
       <ScrollView horizontal showsHorizontalScrollIndicator>
-        <View className="rounded-lg border border-slate-200 bg-white p-3">
+        <View className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
           <View style={{ flexDirection: 'row' }}>
             <View style={{ width: HEADER_CORR }} />
             {order.map((emo) => (
               <View key={emo} style={{ width: CELDA_CORR }} className=" px-0.5 py-1">
-                <Text numberOfLines={1} className="text-center text-[10px] font-medium text-slate-500">
+                <Text numberOfLines={1} className="text-center text-[10px] font-medium text-slate-500 dark:text-slate-400">
                   {etiquetaEmocion(emo)}
                 </Text>
               </View>
@@ -274,7 +274,7 @@ export function EmotionCorrelationHeatmap({
           {order.map((rowEmo, i) => (
             <View key={rowEmo} style={{ flexDirection: 'row' }} className="mt-px">
               <View style={{ width: HEADER_CORR }} className="items-end justify-center pr-1">
-                <Text numberOfLines={1} className="text-[10px] font-medium text-slate-500">
+                <Text numberOfLines={1} className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
                   {etiquetaEmocion(rowEmo)}
                 </Text>
               </View>
@@ -287,7 +287,7 @@ export function EmotionCorrelationHeatmap({
                     key={`${rowEmo}-${colEmo}`}
                     onPress={() => setSel(activo ? null : { x: colEmo, y: rowEmo, v })}
                     style={{ height: CELDA_CORR, width: CELDA_CORR }}
-                    className="relative items-center justify-center bg-white"
+                    className="relative items-center justify-center bg-white dark:bg-slate-900"
                   >
                     <View
                       style={{
@@ -296,17 +296,17 @@ export function EmotionCorrelationHeatmap({
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        backgroundColor: TINTE,
+                        backgroundColor: colores.primario,
                         opacity: isDiag ? 0.08 + opacidadCorrelacion(v) * 0.9 : opacidadCorrelacion(v) * 0.22,
                       }}
                     />
                     {activo && (
                       <View
                         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-                        className="border border-slate-900"
+                        className="border border-slate-900 dark:border-slate-100"
                       />
                     )}
-                    <Text className="font-mono text-[10px] text-slate-600">{v.toFixed(2)}</Text>
+                    <Text className="font-mono text-[10px] text-slate-600 dark:text-slate-400">{v.toFixed(2)}</Text>
                   </Pressable>
                 );
               })}
@@ -314,37 +314,37 @@ export function EmotionCorrelationHeatmap({
           ))}
 
           <View className="mt-3 flex-row items-center gap-2">
-            <Text className="font-mono text-[11px] text-slate-500">-1</Text>
-            <View className="h-1 flex-1 flex-row overflow-hidden rounded-full bg-slate-200">
-              <View className="flex-1 bg-slate-200" />
-              <View className="flex-1" style={{ backgroundColor: TINTE, opacity: 0.2 }} />
-              <View className="flex-1" style={{ backgroundColor: TINTE }} />
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">-1</Text>
+            <View className="h-1 flex-1 flex-row overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+              <View className="flex-1 bg-slate-200 dark:bg-slate-700" />
+              <View className="flex-1" style={{ backgroundColor: colores.primario, opacity: 0.2 }} />
+              <View className="flex-1" style={{ backgroundColor: colores.primario }} />
             </View>
-            <Text className="font-mono text-[11px] text-slate-500">+1</Text>
-            <Text className="ml-2 text-[11px] text-slate-500">Pearson r</Text>
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">+1</Text>
+            <Text className="ml-2 text-[11px] text-slate-500 dark:text-slate-400">Pearson r</Text>
           </View>
         </View>
       </ScrollView>
 
       {sel && (
-        <View className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
-          <Text className="text-xs font-medium text-slate-900">
+        <View className="mt-2 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3 py-2">
+          <Text className="text-xs font-medium text-slate-900 dark:text-slate-100">
             {etiquetaEmocion(sel.y)} ↔ {etiquetaEmocion(sel.x)}
           </Text>
-          <Text className="font-mono text-[11px] text-slate-500">
-            r <Text className="text-slate-900">{sel.v.toFixed(3)}</Text>
+          <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+            r <Text className="text-slate-900 dark:text-slate-100">{sel.v.toFixed(3)}</Text>
           </Text>
           {topWords && (
-            <View className="mt-1.5 flex-row gap-3 border-t border-slate-200 pt-1.5">
+            <View className="mt-1.5 flex-row gap-3 border-t border-slate-200 dark:border-slate-800 pt-1.5">
               <View className="flex-1">
-                <Text className="text-[11px] font-medium text-slate-900">{etiquetaEmocion(sel.y)}</Text>
-                <Text className="font-mono text-[11px] text-slate-500">
+                <Text className="text-[11px] font-medium text-slate-900 dark:text-slate-100">{etiquetaEmocion(sel.y)}</Text>
+                <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
                   {(topWords[sel.y] || []).slice(0, 3).join(' · ') || '—'}
                 </Text>
               </View>
               <View className="flex-1">
-                <Text className="text-[11px] font-medium text-slate-900">{etiquetaEmocion(sel.x)}</Text>
-                <Text className="font-mono text-[11px] text-slate-500">
+                <Text className="text-[11px] font-medium text-slate-900 dark:text-slate-100">{etiquetaEmocion(sel.x)}</Text>
+                <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
                   {(topWords[sel.x] || []).slice(0, 3).join(' · ') || '—'}
                 </Text>
               </View>
@@ -375,6 +375,7 @@ export function EmotionClassHeatmap({
   emotions: string[];
   metric: MetricaClase;
 }) {
+  const { colores } = useTema();
   const [sel, setSel] = useState<{ clase: string; emo: string; v: number; words: string[] } | null>(null);
 
   const emoOrder = useMemo(
@@ -400,14 +401,14 @@ export function EmotionClassHeatmap({
   return (
     <View className="w-full">
       <ScrollView horizontal showsHorizontalScrollIndicator>
-        <View className="rounded-lg border border-slate-200 bg-white p-3">
+        <View className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
           <View style={{ flexDirection: 'row' }}>
             <View style={{ width: HEADER_CLASE }} className="px-1 py-1.5">
-              <Text className="text-[11px] font-medium text-slate-500">clase</Text>
+              <Text className="text-[11px] font-medium text-slate-500 dark:text-slate-400">clase</Text>
             </View>
             {emoOrder.map((emo) => (
               <View key={emo} style={{ width: CELDA_CLASE }} className="px-0.5 py-1.5">
-                <Text numberOfLines={1} className="text-center text-[10px] font-medium text-slate-500">
+                <Text numberOfLines={1} className="text-center text-[10px] font-medium text-slate-500 dark:text-slate-400">
                   {etiquetaEmocion(emo)}
                 </Text>
               </View>
@@ -420,10 +421,10 @@ export function EmotionClassHeatmap({
                 style={{ width: HEADER_CLASE }}
                 className="flex-row items-center gap-1.5 px-1 py-2"
               >
-                <Text numberOfLines={1} className="flex-1 text-[11px] font-medium text-slate-900">
+                <Text numberOfLines={1} className="flex-1 text-[11px] font-medium text-slate-900 dark:text-slate-100">
                   {row.clase}
                 </Text>
-                <Text className="rounded bg-slate-100 px-1 py-0.5 font-mono text-[9px] text-slate-500">
+                <Text className="rounded bg-slate-100 dark:bg-slate-800 px-1 py-0.5 font-mono text-[9px] text-slate-500 dark:text-slate-400">
                   {row.count}
                 </Text>
               </View>
@@ -439,7 +440,7 @@ export function EmotionClassHeatmap({
                       setSel(activo ? null : { clase: row.clase, emo, v, words: palabras })
                     }
                     style={{ height: 36, width: CELDA_CLASE }}
-                    className="relative items-center justify-center bg-white"
+                    className="relative items-center justify-center bg-white dark:bg-slate-900"
                   >
                     <View
                       style={{
@@ -448,18 +449,18 @@ export function EmotionClassHeatmap({
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        backgroundColor: TINTE,
+                        backgroundColor: colores.primario,
                         opacity: t * 0.22,
                       }}
                     />
                     {activo && (
                       <View
                         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-                        className="border border-slate-900"
+                        className="border border-slate-900 dark:border-slate-100"
                       />
                     )}
                     <Text
-                      className={`font-mono text-[9px] ${t > 0.5 ? 'text-slate-900' : 'text-slate-500'}`}
+                      className={`font-mono text-[9px] ${t > 0.5 ? 'text-slate-900 dark:text-slate-100' : 'text-slate-500 dark:text-slate-400'}`}
                     >
                       {v.toFixed(3)}
                     </Text>
@@ -470,29 +471,29 @@ export function EmotionClassHeatmap({
           ))}
 
           <View className="mt-3 flex-row items-center gap-2">
-            <Text className="font-mono text-[11px] text-slate-500">{min.toFixed(3)}</Text>
-            <View className="h-1 flex-1 flex-row overflow-hidden rounded-full bg-slate-200">
-              <View className="flex-1 bg-slate-200" />
-              <View className="flex-1" style={{ backgroundColor: TINTE, opacity: 0.2 }} />
-              <View className="flex-1" style={{ backgroundColor: TINTE }} />
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">{min.toFixed(3)}</Text>
+            <View className="h-1 flex-1 flex-row overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+              <View className="flex-1 bg-slate-200 dark:bg-slate-700" />
+              <View className="flex-1" style={{ backgroundColor: colores.primario, opacity: 0.2 }} />
+              <View className="flex-1" style={{ backgroundColor: colores.primario }} />
             </View>
-            <Text className="font-mono text-[11px] text-slate-500">{max.toFixed(3)}</Text>
-            <Text className="ml-2 text-[11px] text-slate-500">{ETIQUETA_METRICA[metric]}</Text>
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">{max.toFixed(3)}</Text>
+            <Text className="ml-2 text-[11px] text-slate-500 dark:text-slate-400">{ETIQUETA_METRICA[metric]}</Text>
           </View>
         </View>
       </ScrollView>
 
       {sel && (
-        <View className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
-          <Text className="text-xs font-medium text-slate-900">
+        <View className="mt-2 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3 py-2">
+          <Text className="text-xs font-medium text-slate-900 dark:text-slate-100">
             {sel.clase} · {etiquetaEmocion(sel.emo)}
           </Text>
-          <Text className="font-mono text-[11px] text-slate-500">
-            {ETIQUETA_METRICA[metric]} <Text className="text-slate-900">{sel.v.toFixed(4)}</Text>
+          <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+            {ETIQUETA_METRICA[metric]} <Text className="text-slate-900 dark:text-slate-100">{sel.v.toFixed(4)}</Text>
           </Text>
           {sel.words.length > 0 && (
-            <Text className="mt-1 border-t border-slate-200 pt-1 font-mono text-[11px] text-slate-500">
-              más frecuentes: <Text className="text-slate-900">{sel.words.slice(0, 3).join(' · ')}</Text>
+            <Text className="mt-1 border-t border-slate-200 dark:border-slate-800 pt-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+              más frecuentes: <Text className="text-slate-900 dark:text-slate-100">{sel.words.slice(0, 3).join(' · ')}</Text>
             </Text>
           )}
         </View>

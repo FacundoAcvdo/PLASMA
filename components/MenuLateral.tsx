@@ -15,14 +15,17 @@ import {
   Layers,
   LogOut,
   MessagesSquare,
+  Moon,
   Network,
   Settings2,
   Sparkles,
+  Sun,
   Upload,
   Users,
   type LucideIcon,
 } from 'lucide-react-native';
 import { logout, me } from '@/lib/auth';
+import { useTema } from '@/context/tema-context';
 
 type Item = { id: string; titulo: string; icono: LucideIcon; href: string };
 type Grupo = { titulo: string; items: Item[] };
@@ -82,6 +85,7 @@ export function MenuLateral({ navigation }: { navigation: { closeDrawer: () => v
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
+  const { oscuro, colores, alternar } = useTema();
   const [email, setEmail] = useState<string | null>(null);
   const [rol, setRol] = useState<string | null>(null);
 
@@ -112,7 +116,7 @@ export function MenuLateral({ navigation }: { navigation: { closeDrawer: () => v
   const correo = email ?? 'usuario@demo.local';
 
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white dark:bg-slate-950">
       <View className="flex-1">
         <View className="flex-row items-center gap-2.5 px-5 py-4">
           <Image
@@ -120,12 +124,25 @@ export function MenuLateral({ navigation }: { navigation: { closeDrawer: () => v
             style={{ width: 36, height: 36 }}
             resizeMode="contain"
           />
-          <View className="min-w-0">
-            <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: '#0f172a' }}>
+          <View className="min-w-0 flex-1">
+            <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: colores.texto }}>
               PLASMA
             </Text>
-            <Text style={{ fontSize: 12, color: '#64748b' }}>Salud mental</Text>
+            <Text style={{ fontSize: 12, color: colores.textoSuave }}>Salud mental</Text>
           </View>
+          <TouchableOpacity
+            onPress={alternar}
+            accessibilityRole="button"
+            accessibilityLabel={oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            hitSlop={8}
+            className="size-9 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800"
+          >
+            {oscuro ? (
+              <Sun size={18} color={colores.textoMedio} />
+            ) : (
+              <Moon size={18} color={colores.textoMedio} />
+            )}
+          </TouchableOpacity>
         </View>
 
         <ScrollView
@@ -140,7 +157,7 @@ export function MenuLateral({ navigation }: { navigation: { closeDrawer: () => v
             if (items.length === 0) return null;
             return (
               <View key={grupo.titulo} className="mb-4">
-                <Text className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <Text className="mb-1 px-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   {grupo.titulo}
                 </Text>
                 {items.map((item) => {
@@ -151,13 +168,15 @@ export function MenuLateral({ navigation }: { navigation: { closeDrawer: () => v
                       key={item.id}
                       onPress={() => ir(item.href)}
                       className={`mb-0.5 flex-row items-center gap-3 rounded-lg px-3 py-2.5 ${
-                        activo ? 'bg-indigo-600' : ''
+                        activo ? 'bg-primario dark:bg-primario-500' : ''
                       }`}
                     >
-                      <Icono size={17} color={activo ? '#fff' : '#64748b'} />
+                      <Icono size={17} color={activo ? '#fff' : colores.textoSuave} />
                       <Text
                         style={{ fontFamily: 'Inter_500Medium' }}
-                        className={`text-sm ${activo ? 'text-white' : 'text-slate-700'}`}
+                        className={`text-sm ${
+                          activo ? 'text-white' : 'text-slate-700 dark:text-slate-300'
+                        }`}
                       >
                         {item.titulo}
                       </Text>
@@ -169,14 +188,14 @@ export function MenuLateral({ navigation }: { navigation: { closeDrawer: () => v
           })}
         </ScrollView>
 
-        <View className="border-t border-slate-100 px-3 pb-2 pt-3">
+        <View className="border-t border-slate-100 px-3 pb-2 pt-3 dark:border-slate-800">
           <View className="flex-row items-center gap-2.5 rounded-lg px-2.5 py-2">
-            <View className="size-8 shrink-0 items-center justify-center rounded-full bg-slate-100">
-              <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 12, color: '#475569' }}>
+            <View className="size-8 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+              <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 12, color: colores.textoMedio }}>
                 {correo.slice(0, 2).toUpperCase()}
               </Text>
             </View>
-            <Text className="min-w-0 flex-1 text-xs text-slate-500" numberOfLines={1}>
+            <Text className="min-w-0 flex-1 text-xs text-slate-500 dark:text-slate-400" numberOfLines={1}>
               {correo}
             </Text>
           </View>
@@ -184,8 +203,11 @@ export function MenuLateral({ navigation }: { navigation: { closeDrawer: () => v
             onPress={cerrarSesion}
             className="mt-1 flex-row items-center gap-2.5 rounded-lg px-2.5 py-2"
           >
-            <LogOut size={16} color="#64748b" />
-            <Text style={{ fontFamily: 'Inter_500Medium' }} className="text-sm text-slate-700">
+            <LogOut size={16} color={colores.textoSuave} />
+            <Text
+              style={{ fontFamily: 'Inter_500Medium' }}
+              className="text-sm text-slate-700 dark:text-slate-300"
+            >
               Cerrar sesión
             </Text>
           </TouchableOpacity>

@@ -23,6 +23,7 @@ import {
   type TopicModelingResult,
   type TopicModelingTopic,
 } from '@/lib/topics/types';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/topics-view.tsx:
 // mismo flujo (adopt/start/getTopicResults) y mismo contenido/selector.
@@ -51,14 +52,14 @@ function DocumentoExpandible({
   const texto = expandido || !esLargo ? document.text : `${document.text.slice(0, MAX_CHARS)} ...`;
 
   return (
-    <View className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-      <Text className="mb-1 text-xs text-slate-500" style={{ fontFamily: 'Inter_600SemiBold' }}>
+    <View className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-3">
+      <Text className="mb-1 text-xs text-slate-500 dark:text-slate-400" style={{ fontFamily: 'Inter_600SemiBold' }}>
         Documento {index + 1}
       </Text>
-      <Text className="text-xs leading-5 text-slate-700">{texto}</Text>
+      <Text className="text-xs leading-5 text-slate-700 dark:text-slate-300">{texto}</Text>
       {esLargo && (
         <Pressable onPress={() => setExpandido((v) => !v)}>
-          <Text className="mt-1 text-xs text-indigo-600" style={{ fontFamily: 'Inter_600SemiBold' }}>
+          <Text className="mt-1 text-xs text-primario dark:text-primario-400" style={{ fontFamily: 'Inter_600SemiBold' }}>
             {expandido ? 'Ver menos' : 'Ver más'}
           </Text>
         </Pressable>
@@ -80,17 +81,17 @@ function TopicRanking({
     <Pressable
       onPress={onPress}
       className={`rounded-lg border p-3 ${
-        selected ? 'border-indigo-200 bg-indigo-50/60' : 'border-slate-200 bg-white'
+        selected ? 'border-primario-200 dark:border-primario-900 bg-primario-50/60 dark:bg-primario-950/40' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
       }`}
     >
       <View className="flex-row gap-3">
         <View
           className={`size-9 items-center justify-center rounded-md ${
-            selected ? 'bg-indigo-600' : 'bg-indigo-50'
+            selected ? 'bg-primario dark:bg-primario-500' : 'bg-primario-50 dark:bg-primario-950'
           }`}
         >
           <Text
-            className={selected ? 'text-white' : 'text-indigo-600'}
+            className={selected ? 'text-white' : 'text-primario dark:text-primario-400'}
             style={{ fontFamily: 'Inter_600SemiBold', fontSize: 13 }}
           >
             {topic.topic_id + 1}
@@ -101,26 +102,26 @@ function TopicRanking({
           <View className="flex-row items-center justify-between gap-2">
             <Text
               numberOfLines={1}
-              className="text-sm text-slate-900"
+              className="text-sm text-slate-900 dark:text-slate-100"
               style={{ fontFamily: 'Inter_600SemiBold', flexShrink: 1 }}
             >
               {getTopicTitle(topic)}
             </Text>
-            <View className="shrink-0 rounded-md bg-slate-100 px-2 py-0.5">
-              <Text className="text-[11px] text-slate-600">{topic.percentage.toFixed(1)}%</Text>
+            <View className="shrink-0 rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5">
+              <Text className="text-[11px] text-slate-600 dark:text-slate-400">{topic.percentage.toFixed(1)}%</Text>
             </View>
           </View>
 
-          <View className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+          <View className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <View
-              className="h-full rounded-full bg-indigo-600"
+              className="h-full rounded-full bg-primario dark:bg-primario-500"
               style={{ width: `${topic.percentage}%` }}
             />
           </View>
 
           <View className="mt-2 flex-row flex-wrap gap-x-2 gap-y-1">
             {topic.keywords.slice(0, 6).map((keyword, i) => (
-              <Text key={i} className="text-xs text-slate-500">
+              <Text key={i} className="text-xs text-slate-500 dark:text-slate-400">
                 {keyword}
               </Text>
             ))}
@@ -142,22 +143,24 @@ function StatTile({
   value: string;
   muted?: boolean;
 }) {
+  const { colores } = useTema();
   return (
-    <View className="flex-1 rounded-xl border border-slate-200 bg-white p-3">
+    <View className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
       <View
         className={`size-8 items-center justify-center rounded-lg ${
-          muted ? 'bg-slate-100' : 'bg-indigo-50'
+          muted ? 'bg-slate-100 dark:bg-slate-800' : 'bg-primario-50 dark:bg-primario-950'
         }`}
       >
         {icon}
       </View>
-      <Text className="mt-2 text-[11px] text-slate-500">{label}</Text>
-      <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 18, color: '#0f172a' }}>{value}</Text>
+      <Text className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">{label}</Text>
+      <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 18, color: colores.texto }}>{value}</Text>
     </View>
   );
 }
 
 export default function Topicos() {
+  const { colores } = useTema();
   const router = useRouter();
   const [estado, setEstado] = useState<Estado>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -264,7 +267,7 @@ export default function Topicos() {
     return (
       <Screen>
         <Titulo>Tópicos</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Seleccioná un dataset para modelar sus tópicos.
         </Text>
         <Boton titulo="Elegir dataset" onPress={() => router.push('/datasets')} />
@@ -287,16 +290,16 @@ export default function Topicos() {
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         <View className="gap-4 pb-10">
           {/* Configuración */}
-          <View className="rounded-xl border border-slate-200 bg-white p-4">
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
             <View className="flex-row items-center gap-3">
-              <View className="size-9 items-center justify-center rounded-lg bg-indigo-50">
-                <Settings2 size={16} color="#4f46e5" />
+              <View className="size-9 items-center justify-center rounded-lg bg-primario-50 dark:bg-primario-950">
+                <Settings2 size={16} color={colores.primario} />
               </View>
               <View className="flex-1">
-                <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 14, color: '#0f172a' }}>
+                <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 14, color: colores.texto }}>
                   Cantidad máxima de tópicos
                 </Text>
-                <Text className="text-xs text-slate-500">
+                <Text className="text-xs text-slate-500 dark:text-slate-400">
                   Definí un tope para el modelado de tópicos.
                 </Text>
               </View>
@@ -317,21 +320,21 @@ export default function Topicos() {
               <View className="flex-row items-center justify-between gap-3">
                 <View className="flex-row items-center gap-2">
                   <View className="size-2 rounded-full bg-emerald-500" />
-                  <Text className="text-sm text-slate-500">Análisis completado</Text>
+                  <Text className="text-sm text-slate-500 dark:text-slate-400">Análisis completado</Text>
                 </View>
                 <TouchableOpacity
                   onPress={ejecutarTopicModeling}
-                  className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2"
+                  className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2"
                 >
-                  <RotateCw size={14} color="#0f172a" />
-                  <Text className="text-sm text-slate-900">Volver a ejecutar</Text>
+                  <RotateCw size={14} color={colores.texto} />
+                  <Text className="text-sm text-slate-900 dark:text-slate-100">Volver a ejecutar</Text>
                 </TouchableOpacity>
               </View>
 
               {reductionNotice && (
                 <View className="flex-row items-center gap-3 rounded-xl border border-amber-500/40 bg-amber-500/5 p-4">
-                  <AlertCircle size={20} color="#d97706" />
-                  <Text className="flex-1 text-sm text-slate-900">
+                  <AlertCircle size={20} color={colores.advertencia} />
+                  <Text className="flex-1 text-sm text-slate-900 dark:text-slate-100">
                     No se pudo reducir a los {reductionNotice.requested} tópicos pedidos. Se muestran{' '}
                     {reductionNotice.achieved} tópicos.
                   </Text>
@@ -340,29 +343,29 @@ export default function Topicos() {
 
               <View className="flex-row gap-2">
                 <StatTile
-                  icon={<FileText size={15} color="#4f46e5" />}
+                  icon={<FileText size={15} color={colores.primario} />}
                   label="Documentos"
                   value={topics.document_count.toLocaleString()}
                 />
                 <StatTile
-                  icon={<Hash size={15} color="#4f46e5" />}
+                  icon={<Hash size={15} color={colores.primario} />}
                   label="Tópicos"
                   value={String(topics.topic_count)}
                 />
                 <StatTile
                   muted
-                  icon={<AlertCircle size={15} color="#64748b" />}
+                  icon={<AlertCircle size={15} color={colores.textoSuave} />}
                   label="Atípicos"
                   value={`${topics.outlier_percentage.toFixed(1)}%`}
                 />
               </View>
 
-              <View className="rounded-xl border border-slate-200 bg-white">
+              <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                 <View className="px-4 pb-2 pt-4">
-                  <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: '#0f172a' }}>
+                  <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: colores.texto }}>
                     Principales tópicos
                   </Text>
-                  <Text className="mt-0.5 text-xs text-slate-500">
+                  <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                     Los tópicos están ordenados según su presencia en el corpus. Tocá uno para ver
                     más información.
                   </Text>
@@ -380,16 +383,16 @@ export default function Topicos() {
               </View>
             </>
           ) : (
-            <View className="items-center rounded-xl border border-slate-200 bg-white px-6 py-14">
-              <View className="size-14 items-center justify-center rounded-2xl bg-indigo-50">
+            <View className="items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-14">
+              <View className="size-14 items-center justify-center rounded-2xl bg-primario-50 dark:bg-primario-950">
                 {estado === 'running' ? (
-                  <ActivityIndicator size="large" color="#4f46e5" />
+                  <ActivityIndicator size="large" color={colores.primario} />
                 ) : (
-                  <Layers size={24} color="#4f46e5" />
+                  <Layers size={24} color={colores.primario} />
                 )}
               </View>
               <Text
-                className="mt-4 text-center text-sm text-slate-900"
+                className="mt-4 text-center text-sm text-slate-900 dark:text-slate-100"
                 style={{ fontFamily: 'Inter_500Medium' }}
               >
                 {error ??
@@ -397,7 +400,7 @@ export default function Topicos() {
                     ? 'Esperando resultados…'
                     : 'Esta operación no se ejecuta automáticamente')}
               </Text>
-              <Text className="mt-1 max-w-md text-center text-sm text-slate-500">
+              <Text className="mt-1 max-w-md text-center text-sm text-slate-500 dark:text-slate-400">
                 {error
                   ? 'Revisá la conexión y volvé a extraer los tópicos.'
                   : estado === 'running'
@@ -424,34 +427,34 @@ export default function Topicos() {
       >
         {selectedTopic && (
           <View className="flex-1 justify-end bg-black/40">
-            <View className="max-h-[88%] rounded-t-3xl bg-white">
+            <View className="max-h-[88%] rounded-t-3xl bg-white dark:bg-slate-900">
               <View className="flex-row items-start justify-between gap-4 px-5 pt-5">
                 <View className="min-w-0 flex-1">
                   <View className="flex-row flex-wrap items-center gap-2">
                     <Text
-                      className="text-slate-900"
+                      className="text-slate-900 dark:text-slate-100"
                       style={{ fontFamily: 'Inter_600SemiBold', fontSize: 16, flexShrink: 1 }}
                     >
                       {selectedTopic.title ?? `Tópico ${selectedTopic.topic_id + 1}`}
                     </Text>
-                    <View className="rounded-md bg-slate-100 px-2 py-0.5">
-                      <Text className="text-[11px] text-slate-600">
+                    <View className="rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5">
+                      <Text className="text-[11px] text-slate-600 dark:text-slate-400">
                         {selectedTopic.percentage.toFixed(1)}%
                       </Text>
                     </View>
                     {selectedTopic.title_source === 'llm' && (
-                      <View className="rounded-md border border-slate-200 px-2 py-0.5">
-                        <Text className="text-[11px] text-slate-600">IA</Text>
+                      <View className="rounded-md border border-slate-200 dark:border-slate-800 px-2 py-0.5">
+                        <Text className="text-[11px] text-slate-600 dark:text-slate-400">IA</Text>
                       </View>
                     )}
                   </View>
-                  <Text className="mt-1 text-xs text-slate-500">
+                  <Text className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                     {selectedTopic.document_count.toLocaleString()} documentos pertenecen a este
                     tópico.
                   </Text>
                 </View>
                 <Pressable onPress={() => setSelectedTopicId(null)} className="rounded-lg p-1.5">
-                  <X size={18} color="#0f172a" />
+                  <X size={18} color={colores.texto} />
                 </Pressable>
               </View>
 
@@ -461,24 +464,24 @@ export default function Topicos() {
                 showsVerticalScrollIndicator={false}
               >
                 <Text
-                  className="mb-2 text-sm text-slate-900"
+                  className="mb-2 text-sm text-slate-900 dark:text-slate-100"
                   style={{ fontFamily: 'Inter_500Medium' }}
                 >
                   Términos representativos
                 </Text>
                 <View className="flex-row flex-wrap gap-1.5">
                   {selectedTopic.keywords.map((keyword, i) => (
-                    <View key={i} className="rounded-md border border-slate-200 bg-white px-2 py-0.5">
-                      <Text className="text-[11px] text-slate-600">{keyword}</Text>
+                    <View key={i} className="rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2 py-0.5">
+                      <Text className="text-[11px] text-slate-600 dark:text-slate-400">{keyword}</Text>
                     </View>
                   ))}
                 </View>
 
                 <View className="mb-2 mt-5">
-                  <Text className="text-sm text-slate-900" style={{ fontFamily: 'Inter_500Medium' }}>
+                  <Text className="text-sm text-slate-900 dark:text-slate-100" style={{ fontFamily: 'Inter_500Medium' }}>
                     Documentos representativos
                   </Text>
-                  <Text className="text-xs text-slate-500">
+                  <Text className="text-xs text-slate-500 dark:text-slate-400">
                     Algunos documentos representativos de este tópico.
                   </Text>
                 </View>

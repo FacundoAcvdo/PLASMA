@@ -13,6 +13,7 @@ import { ApiError, apiFetch } from '@/lib/api-fetch';
 import { me } from '@/lib/auth';
 import { CajaError, Campo, Cargando, FUENTE, Screen, Subtitulo, Titulo } from '@/components/ui';
 import { Selector } from '@/components/Selector';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/users-view.tsx.
 // La fila de usuario se parte en dos líneas (datos + acciones) para entrar
@@ -43,9 +44,10 @@ function fechaAlta(createdAt: string): string {
 }
 
 function Etiqueta({ children }: { children: string }) {
+  const { colores } = useTema();
   return (
     <Text
-      style={{ fontFamily: FUENTE.medium, fontSize: 14, color: '#0f172a', marginBottom: 6 }}
+      style={{ fontFamily: FUENTE.medium, fontSize: 14, color: colores.texto, marginBottom: 6 }}
     >
       {children}
     </Text>
@@ -53,6 +55,7 @@ function Etiqueta({ children }: { children: string }) {
 }
 
 export default function GestionUsuarios() {
+  const { colores } = useTema();
   const [estado, setEstado] = useState<'cargando' | 'ok' | 'denegado'>('cargando');
   const [verificando, setVerificando] = useState(true);
   const [usuarios, setUsuarios] = useState<UsuarioReal[]>([]);
@@ -201,9 +204,9 @@ export default function GestionUsuarios() {
       <Screen>
         <Titulo>Gestión de usuarios</Titulo>
         <Subtitulo>Crea y elimina cuentas con acceso a la plataforma.</Subtitulo>
-        <View className="flex-row items-center gap-2.5 rounded-xl border border-slate-200 bg-white p-5">
-          <ShieldAlert size={16} color="#64748b" />
-          <Text className="flex-1 text-sm text-slate-500">
+        <View className="flex-row items-center gap-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+          <ShieldAlert size={16} color={colores.textoSuave} />
+          <Text className="flex-1 text-sm text-slate-500 dark:text-slate-400">
             Solo un superadministrador puede ver esta sección.
           </Text>
         </View>
@@ -226,12 +229,12 @@ export default function GestionUsuarios() {
         <CajaError mensaje={errorMensaje} />
 
         <View className="gap-4">
-          <View className="gap-4 rounded-xl border border-slate-200 bg-white p-4">
+          <View className="gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
             <View className="gap-1">
-              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                 Crear usuario
               </Text>
-              <Text className="text-sm leading-relaxed text-slate-500">
+              <Text className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                 Alta de una nueva cuenta con acceso a la plataforma.
               </Text>
             </View>
@@ -271,7 +274,7 @@ export default function GestionUsuarios() {
               onPress={() => void crear()}
               disabled={procesando}
               className={`flex-row items-center justify-center gap-2 rounded-xl px-4 py-3.5 ${
-                procesando ? 'bg-indigo-300' : 'bg-indigo-600'
+                procesando ? 'bg-primario-300 dark:bg-primario-900' : 'bg-primario dark:bg-primario-500'
               }`}
             >
               {procesando ? (
@@ -286,9 +289,9 @@ export default function GestionUsuarios() {
 
             {mensaje && (
               <View className="flex-row items-center gap-1.5">
-                <Check size={16} color="#047857" />
+                <Check size={16} color={colores.exito} />
                 <Text
-                  style={{ fontFamily: FUENTE.regular, fontSize: 14, color: '#047857' }}
+                  style={{ fontFamily: FUENTE.regular, fontSize: 14, color: colores.exito }}
                 >
                   {mensaje}
                 </Text>
@@ -296,9 +299,9 @@ export default function GestionUsuarios() {
             )}
           </View>
 
-          <View className="rounded-xl border border-slate-200 bg-white">
-            <View className="border-b border-slate-100 px-4 py-4">
-              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+            <View className="border-b border-slate-100 dark:border-slate-800 px-4 py-4">
+              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                 Usuarios ({usuarios.length})
               </Text>
             </View>
@@ -306,15 +309,15 @@ export default function GestionUsuarios() {
               {usuarios.map((u) => (
                 <View
                   key={u.id}
-                  className="gap-3 rounded-lg border border-slate-200 p-3"
+                  className="gap-3 rounded-lg border border-slate-200 dark:border-slate-800 p-3"
                 >
                   <View className="flex-row items-center gap-3">
-                    <View className="size-9 shrink-0 items-center justify-center rounded-full bg-indigo-50">
+                    <View className="size-9 shrink-0 items-center justify-center rounded-full bg-primario-50 dark:bg-primario-950">
                       <Text
                         style={{
                           fontFamily: FUENTE.semibold,
                           fontSize: 12,
-                          color: '#4f46e5',
+                          color: colores.primario,
                         }}
                       >
                         {u.email.slice(0, 2).toUpperCase()}
@@ -326,25 +329,25 @@ export default function GestionUsuarios() {
                         style={{
                           fontFamily: FUENTE.medium,
                           fontSize: 14,
-                          color: '#0f172a',
+                          color: colores.texto,
                         }}
                       >
                         {u.email}
                       </Text>
-                      <Text numberOfLines={1} className="text-xs text-slate-500">
+                      <Text numberOfLines={1} className="text-xs text-slate-500 dark:text-slate-400">
                         Alta: {fechaAlta(u.created_at)}
                       </Text>
                     </View>
                     <View
                       className={`rounded-full px-2.5 py-0.5 ${
-                        u.role === 'admin' ? 'bg-indigo-600' : 'bg-slate-100'
+                        u.role === 'admin' ? 'bg-primario dark:bg-primario-500' : 'bg-slate-100 dark:bg-slate-800'
                       }`}
                     >
                       <Text
                         style={{
                           fontFamily: FUENTE.regular,
                           fontSize: 11,
-                          color: u.role === 'admin' ? '#fff' : '#475569',
+                          color: u.role === 'admin' ? '#fff' : colores.textoMedio,
                         }}
                       >
                         {etiquetaRol(u.role)}
@@ -368,22 +371,22 @@ export default function GestionUsuarios() {
                         setErrorMensaje(null);
                       }}
                       accessibilityLabel={`Cambiar contraseña de ${u.email}`}
-                      className="size-11 items-center justify-center rounded-lg border border-slate-200"
+                      className="size-11 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800"
                     >
-                      <KeyRound size={16} color="#64748b" />
+                      <KeyRound size={16} color={colores.textoSuave} />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => setPorEliminar(u)}
                       accessibilityLabel={`Eliminar a ${u.email}`}
-                      className="size-11 items-center justify-center rounded-lg border border-slate-200"
+                      className="size-11 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800"
                     >
-                      <Trash2 size={16} color="#64748b" />
+                      <Trash2 size={16} color={colores.textoSuave} />
                     </TouchableOpacity>
                   </View>
                 </View>
               ))}
               {usuarios.length === 0 && (
-                <Text className="text-sm text-slate-500">No hay usuarios para mostrar.</Text>
+                <Text className="text-sm text-slate-500 dark:text-slate-400">No hay usuarios para mostrar.</Text>
               )}
             </View>
           </View>
@@ -408,18 +411,18 @@ export default function GestionUsuarios() {
               keyboardShouldPersistTaps="handled"
               bottomOffset={24}
             >
-              <View className="w-full rounded-2xl bg-white p-5">
+              <View className="w-full rounded-2xl bg-white dark:bg-slate-900 p-5">
                 <Text
                   style={{
                     fontFamily: FUENTE.semibold,
                     fontSize: 17,
-                    color: '#0f172a',
+                    color: colores.texto,
                     marginBottom: 6,
                   }}
                 >
                   Cambiar contraseña
                 </Text>
-                <Text className="mb-4 text-sm leading-relaxed text-slate-600">
+                <Text className="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                   Nueva contraseña para {porClave.email}. Se cerrarán sus sesiones.
                 </Text>
 
@@ -435,7 +438,7 @@ export default function GestionUsuarios() {
                 />
                 <TouchableOpacity
                   onPress={() => void cambiarClave()}
-                  className="flex-row items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3.5"
+                  className="flex-row items-center justify-center gap-2 rounded-xl bg-primario dark:bg-primario-500 px-4 py-3.5"
                 >
                   <KeyRound size={16} color="#fff" />
                   <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#fff' }}>
@@ -444,9 +447,9 @@ export default function GestionUsuarios() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setPorClave(null)}
-                  className="mt-2 items-center rounded-xl border border-slate-200 px-4 py-3.5"
+                  className="mt-2 items-center rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-3.5"
                 >
-                  <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+                  <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                     Cancelar
                   </Text>
                 </TouchableOpacity>
@@ -464,24 +467,24 @@ export default function GestionUsuarios() {
           onRequestClose={() => setPorEliminar(null)}
         >
           <View className="flex-1 items-center justify-center bg-black/50 px-6">
-            <View className="w-full rounded-2xl bg-white p-5">
+            <View className="w-full rounded-2xl bg-white dark:bg-slate-900 p-5">
               <Text
                 style={{
                   fontFamily: FUENTE.semibold,
                   fontSize: 17,
-                  color: '#0f172a',
+                  color: colores.texto,
                   marginBottom: 8,
                 }}
               >
                 Eliminar usuario
               </Text>
-              <Text className="mb-5 text-sm leading-relaxed text-slate-600">
+              <Text className="mb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                 ¿Seguro que quieres eliminar a {porEliminar.email}? Esta acción no se puede
                 deshacer.
               </Text>
               <TouchableOpacity
                 onPress={() => void eliminar(porEliminar.id)}
-                className="flex-row items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3.5"
+                className="flex-row items-center justify-center gap-2 rounded-xl bg-red-600 dark:bg-red-500 px-4 py-3.5"
               >
                 <Trash2 size={16} color="#fff" />
                 <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#fff' }}>
@@ -490,9 +493,9 @@ export default function GestionUsuarios() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setPorEliminar(null)}
-                className="mt-2 items-center rounded-xl border border-slate-200 px-4 py-3.5"
+                className="mt-2 items-center rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-3.5"
               >
-                <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+                <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                   Cancelar
                 </Text>
               </TouchableOpacity>

@@ -6,12 +6,14 @@ import { apiFetch } from '@/lib/api-fetch';
 import { useDatasetsQuery } from '@/context/dataset-context';
 import { Cargando, FUENTE, Screen, Subtitulo, Titulo } from '@/components/ui';
 import { type ChatResumen, type HistorialChats } from '@/lib/chat/types';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/chat-history-view.tsx.
 // La fila clickeable (hover en web) se mantiene como tap; el botón de borrar
 // de cada fila no propaga el tap (el responder de RN prioriza el más interno).
 
 export default function HistorialDeChats() {
+  const { colores } = useTema();
   const router = useRouter();
   const { data: datasets } = useDatasetsQuery();
 
@@ -123,13 +125,13 @@ export default function HistorialDeChats() {
             <Titulo>Historial de chats</Titulo>
             <Subtitulo>Consulta y elimina conversaciones anteriores.</Subtitulo>
             <View className="mb-3 flex-row items-center justify-between gap-3">
-              <Text style={{ fontFamily: FUENTE.medium, fontSize: 15, color: '#0f172a' }}>
+              <Text style={{ fontFamily: FUENTE.medium, fontSize: 15, color: colores.texto }}>
                 Conversaciones guardadas
               </Text>
               {chats.total > 0 && (
                 <TouchableOpacity
                   onPress={pedirEliminarTodos}
-                  className="flex-row items-center gap-1.5 rounded-lg bg-red-600 px-3 py-2"
+                  className="flex-row items-center gap-1.5 rounded-lg bg-red-600 dark:bg-red-500 px-3 py-2"
                 >
                   <Trash2 size={14} color="#fff" />
                   <Text style={{ fontFamily: FUENTE.medium, fontSize: 14, color: '#fff' }}>
@@ -142,15 +144,15 @@ export default function HistorialDeChats() {
         }
         ListEmptyComponent={
           <View className="items-center gap-2 py-14">
-            <History size={32} color="#94a3b8" />
-            <Text style={{ fontFamily: FUENTE.medium, fontSize: 14, color: '#0f172a' }}>
+            <History size={32} color={colores.textoMuted} />
+            <Text style={{ fontFamily: FUENTE.medium, fontSize: 14, color: colores.texto }}>
               No hay conversaciones
             </Text>
             <Text
               style={{
                 fontFamily: FUENTE.regular,
                 fontSize: 14,
-                color: '#64748b',
+                color: colores.textoSuave,
                 textAlign: 'center',
               }}
             >
@@ -161,28 +163,28 @@ export default function HistorialDeChats() {
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => redirigir(item.chat_id, item.dataset_id)}
-            className="mb-2.5 flex-row items-center gap-3 rounded-lg border border-slate-200 p-3.5"
+            className="mb-2.5 flex-row items-center gap-3 rounded-lg border border-slate-200 dark:border-slate-800 p-3.5"
           >
-            <View className="size-9 items-center justify-center rounded-lg bg-slate-100">
+            <View className="size-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
               {item.dataset_id ? (
-                <Database size={16} color="#475569" />
+                <Database size={16} color={colores.textoMedio} />
               ) : (
-                <MessageCircle size={16} color="#475569" />
+                <MessageCircle size={16} color={colores.textoMedio} />
               )}
             </View>
             <View className="min-w-0 flex-1">
               <Text
                 numberOfLines={1}
-                style={{ fontFamily: FUENTE.medium, fontSize: 14, color: '#0f172a' }}
+                style={{ fontFamily: FUENTE.medium, fontSize: 14, color: colores.texto }}
               >
                 {item.titulo?.trim() ? item.titulo : 'Sin título'}
               </Text>
-              <Text style={{ fontFamily: FUENTE.regular, fontSize: 12, color: '#64748b' }}>
+              <Text style={{ fontFamily: FUENTE.regular, fontSize: 12, color: colores.textoSuave }}>
                 Fecha creación: {item.fecha_creacion}
               </Text>
             </View>
-            <View className="rounded-full border border-slate-200 px-2 py-0.5">
-              <Text style={{ fontFamily: FUENTE.regular, fontSize: 11, color: '#475569' }}>
+            <View className="rounded-full border border-slate-200 dark:border-slate-800 px-2 py-0.5">
+              <Text style={{ fontFamily: FUENTE.regular, fontSize: 11, color: colores.textoMedio }}>
                 {item.dataset_id ? 'Dataset' : 'General'}
               </Text>
             </View>
@@ -191,7 +193,7 @@ export default function HistorialDeChats() {
               accessibilityLabel={`Eliminar chat ${item.titulo ?? ''}`}
               className="p-1.5"
             >
-              <Trash2 size={16} color="#64748b" />
+              <Trash2 size={16} color={colores.textoSuave} />
             </TouchableOpacity>
           </TouchableOpacity>
         )}
@@ -204,18 +206,18 @@ export default function HistorialDeChats() {
         onRequestClose={() => setConfirmacion(null)}
       >
         <View className="flex-1 items-center justify-center bg-black/50 px-6">
-          <View className="w-full rounded-2xl bg-white p-5">
+          <View className="w-full rounded-2xl bg-white dark:bg-slate-900 p-5">
             <Text
               style={{
                 fontFamily: FUENTE.semibold,
                 fontSize: 17,
-                color: '#0f172a',
+                color: colores.texto,
                 marginBottom: 8,
               }}
             >
               {confirmacion?.titulo}
             </Text>
-            <Text className="mb-5 text-sm leading-relaxed text-slate-600">
+            <Text className="mb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
               {confirmacion?.descripcion}
             </Text>
             <TouchableOpacity
@@ -224,7 +226,7 @@ export default function HistorialDeChats() {
                 setConfirmacion(null);
                 accion?.();
               }}
-              className="flex-row items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3.5"
+              className="flex-row items-center justify-center gap-2 rounded-xl bg-red-600 dark:bg-red-500 px-4 py-3.5"
             >
               <Trash2 size={16} color="#fff" />
               <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#fff' }}>
@@ -233,9 +235,9 @@ export default function HistorialDeChats() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setConfirmacion(null)}
-              className="mt-2 items-center rounded-xl border border-slate-200 px-4 py-3.5"
+              className="mt-2 items-center rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-3.5"
             >
-              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                 Cancelar
               </Text>
             </TouchableOpacity>

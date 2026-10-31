@@ -8,6 +8,7 @@ import { apiFetch, ApiError } from '@/lib/api-fetch';
 import { Boton, Screen, Titulo } from '@/components/ui';
 import { EmbeddingsScatter } from '@/components/embeddings-scatter';
 import type { EmbeddingsResponse } from '@/lib/embeddings/types';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/embeddings-view.tsx:
 // mismo flujo (adopt/start/getEmbeddingsImage) y mismo contenido de tarjeta.
@@ -26,6 +27,7 @@ function esRespuestaEmbeddings(value: unknown): value is EmbeddingsResponse {
 }
 
 export default function Embeddings() {
+  const { colores } = useTema();
   const router = useRouter();
   const [estado, setEstado] = useState<Estado>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -117,7 +119,7 @@ export default function Embeddings() {
     return (
       <Screen>
         <Titulo>Embeddings</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Seleccioná un dataset para ver sus embeddings.
         </Text>
         <Boton titulo="Elegir dataset" onPress={() => router.push('/datasets')} />
@@ -129,19 +131,19 @@ export default function Embeddings() {
     return (
       <Screen>
         <Titulo>Embeddings</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Proyección 2D del dataset: {datasetSeleccionado}
         </Text>
-        <View className="items-center rounded-xl border border-slate-200 bg-white px-6 py-14">
-          <View className="size-14 items-center justify-center rounded-2xl bg-indigo-50">
+        <View className="items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-14">
+          <View className="size-14 items-center justify-center rounded-2xl bg-primario-50 dark:bg-primario-950">
             {estado === 'running' ? (
-              <ActivityIndicator size="large" color="#4f46e5" />
+              <ActivityIndicator size="large" color={colores.primario} />
             ) : (
-              <Sparkles size={24} color="#4f46e5" />
+              <Sparkles size={24} color={colores.primario} />
             )}
           </View>
           <Text
-            className="mt-4 text-center text-sm text-slate-900"
+            className="mt-4 text-center text-sm text-slate-900 dark:text-slate-100"
             style={{ fontFamily: 'Inter_500Medium' }}
           >
             {error ??
@@ -149,7 +151,7 @@ export default function Embeddings() {
                 ? 'Esperando resultados…'
                 : 'Esta operación no se ejecuta automáticamente')}
           </Text>
-          <Text className="mt-1 max-w-md text-center text-sm text-slate-500">
+          <Text className="mt-1 max-w-md text-center text-sm text-slate-500 dark:text-slate-400">
             {error
               ? 'Revisá la conexión y volvé a calcular los embeddings.'
               : estado === 'running'
@@ -175,29 +177,29 @@ export default function Embeddings() {
           <View className="flex-row items-center justify-between gap-3">
             <View className="flex-row items-center gap-2">
               <View className="size-2 rounded-full bg-emerald-500" />
-              <Text className="text-sm text-slate-500">Análisis completado</Text>
+              <Text className="text-sm text-slate-500 dark:text-slate-400">Análisis completado</Text>
             </View>
             <TouchableOpacity
               onPress={ejecutarEmbeddings}
-              className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2"
+              className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2"
             >
-              <RotateCw size={14} color="#0f172a" />
-              <Text className="text-sm text-slate-900">Volver a ejecutar</Text>
+              <RotateCw size={14} color={colores.texto} />
+              <Text className="text-sm text-slate-900 dark:text-slate-100">Volver a ejecutar</Text>
             </TouchableOpacity>
           </View>
 
-          <View className="rounded-xl border border-slate-200 bg-white">
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <View className="px-4 pb-1 pt-4">
-              <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: '#0f172a' }}>
+              <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: colores.texto }}>
                 Proyección 2D — UMAP
               </Text>
-              <Text className="mt-0.5 text-xs text-slate-500">
+              <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                 coseno · 2 componentes · HDBSCAN interactivo
               </Text>
             </View>
             <View className="gap-4 px-4 pb-4 pt-2">
               {!data ? (
-                <Text className="py-8 text-center text-sm text-slate-500">Sin datos</Text>
+                <Text className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">Sin datos</Text>
               ) : (
                 <EmbeddingsScatter
                   points={data.points}

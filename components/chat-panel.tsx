@@ -3,6 +3,7 @@ import {
   Animated,
   Pressable,
   ScrollView,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -15,6 +16,8 @@ import { MessageCircle, Plus, Send } from 'lucide-react-native';
 import { Renderer, useMarkdown, type MarkedStyles } from 'react-native-marked';
 import { ApiError, apiFetch } from '@/lib/api-fetch';
 import { Boton, FUENTE, Screen } from '@/components/ui';
+import { useTema } from '@/context/tema-context';
+import type { Colores } from '@/lib/tema';
 import {
   formatearFechaHora,
   type ChatActivo,
@@ -27,37 +30,51 @@ import {
 // datasetName = null → chatbot general; caso contrario, chatbot del dataset.
 
 // Estilos del Markdown del asistente (espejo del render de la web).
-const ESTILOS_MD: MarkedStyles = {
-  text: { color: '#0f172a', fontSize: 14, lineHeight: 21, fontFamily: FUENTE.regular },
-  paragraph: { marginTop: 0, marginBottom: 6 },
-  strong: { fontFamily: FUENTE.semibold },
-  em: { fontStyle: 'italic' },
-  link: { color: '#4f46e5', textDecorationLine: 'underline' },
-  blockquote: {
-    borderLeftWidth: 2,
-    borderLeftColor: '#cbd5e1',
-    paddingLeft: 10,
-    marginVertical: 4,
-  },
-  h1: { fontFamily: FUENTE.semibold, fontSize: 18, color: '#0f172a', marginTop: 8, marginBottom: 4 },
-  h2: { fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a', marginTop: 8, marginBottom: 4 },
-  h3: { fontFamily: FUENTE.semibold, fontSize: 14, color: '#0f172a', marginTop: 6, marginBottom: 2 },
-  codespan: {
-    fontFamily: 'monospace',
-    fontSize: 13,
-    color: '#0f172a',
-    backgroundColor: 'rgba(15,23,42,0.08)',
-  },
-  code: { backgroundColor: 'rgba(15,23,42,0.06)', borderRadius: 8, padding: 10, marginVertical: 4 },
-  codeText: { fontFamily: 'monospace', fontSize: 13, color: '#0f172a' },
-  list: { marginVertical: 2 },
-  li: { color: '#0f172a', fontSize: 14 },
-  hr: { backgroundColor: '#e2e8f0', height: 1, marginVertical: 8 },
-};
+function estilosMarkdown(colores: Colores): MarkedStyles {
+  return {
+    text: { color: colores.texto, fontSize: 14, lineHeight: 21, fontFamily: FUENTE.regular },
+    paragraph: { marginTop: 0, marginBottom: 6 },
+    strong: { fontFamily: FUENTE.semibold },
+    em: { fontStyle: 'italic' },
+    link: { color: colores.primario, textDecorationLine: 'underline' },
+    blockquote: {
+      borderLeftWidth: 2,
+      borderLeftColor: colores.borde,
+      paddingLeft: 10,
+      marginVertical: 4,
+    },
+    h1: { fontFamily: FUENTE.semibold, fontSize: 18, color: colores.texto, marginTop: 8, marginBottom: 4 },
+    h2: { fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto, marginTop: 8, marginBottom: 4 },
+    h3: { fontFamily: FUENTE.semibold, fontSize: 14, color: colores.texto, marginTop: 6, marginBottom: 2 },
+    codespan: {
+      fontFamily: 'monospace',
+      fontSize: 13,
+      color: colores.texto,
+      backgroundColor: colores.codigoFondo,
+    },
+    code: {
+      backgroundColor: colores.codigoBloqueFondo,
+      borderRadius: 8,
+      padding: 10,
+      marginVertical: 4,
+    },
+    codeText: { fontFamily: 'monospace', fontSize: 13, color: colores.texto },
+    list: { marginVertical: 2 },
+    li: { color: colores.texto, fontSize: 14 },
+    hr: { backgroundColor: colores.borde, height: 1, marginVertical: 8 },
+  };
+}
 
-const TEMA_MD = {
-  colors: { code: '#0f172a', link: '#4f46e5', text: '#0f172a', border: '#e2e8f0' },
-};
+function temaMarkdown(colores: Colores) {
+  return {
+    colors: {
+      code: colores.texto,
+      link: colores.primario,
+      text: colores.texto,
+      border: colores.borde,
+    },
+  };
+}
 
 // Render propio de tablas. En pantalla angosta una tabla de 3+ columnas no
 // entra sin comprimir el texto, y un ScrollView horizontal anidado rompe el
@@ -70,6 +87,7 @@ function TablaChat({
   header: ReactNode[][];
   rows: ReactNode[][][];
 }) {
+  const { colores } = useTema();
   if (rows.length === 0) return null;
 
   return (
@@ -79,9 +97,9 @@ function TablaChat({
           key={`fila-${r}`}
           style={{
             borderWidth: 1,
-            borderColor: '#e2e8f0',
+            borderColor: colores.borde,
             borderRadius: 8,
-            backgroundColor: '#f8fafc',
+            backgroundColor: colores.fondoAlt,
             paddingHorizontal: 12,
             paddingVertical: 10,
             gap: 10,
@@ -121,12 +139,18 @@ class RendererChat extends Renderer {
 }
 
 function TextoMarkdown({ contenido }: { contenido: string }) {
+  const { colores } = useTema();
   const [renderer] = useState(() => new RendererChat());
-  const elementos = useMarkdown(contenido, { styles: ESTILOS_MD, theme: TEMA_MD, renderer });
+  const elementos = useMarkdown(contenido, {
+    styles: estilosMarkdown(colores),
+    theme: temaMarkdown(colores),
+    renderer,
+  });
   return <View>{elementos}</View>;
 }
 
 function PuntosEscribiendo() {
+  const { colores } = useTema();
   const [a0] = useState(() => new Animated.Value(0));
   const [a1] = useState(() => new Animated.Value(0));
   const [a2] = useState(() => new Animated.Value(0));
@@ -150,7 +174,7 @@ function PuntosEscribiendo() {
   const puntos = [a0, a1, a2];
   return (
     <View
-      className="flex-row items-center self-start rounded-2xl bg-slate-100 px-4 py-3"
+      className="flex-row items-center self-start rounded-2xl bg-slate-100 dark:bg-slate-800 px-4 py-3"
       style={{ gap: 4 }}
     >
       {puntos.map((valor, i) => (
@@ -160,7 +184,7 @@ function PuntosEscribiendo() {
             width: 6,
             height: 6,
             borderRadius: 3,
-            backgroundColor: '#64748b',
+            backgroundColor: colores.textoSuave,
             transform: [
               { translateY: valor.interpolate({ inputRange: [0, 1], outputRange: [0, -4] }) },
             ],
@@ -172,12 +196,15 @@ function PuntosEscribiendo() {
 }
 
 export function PanelChat({ datasetName = null }: { datasetName?: string | null }) {
+  const { colores } = useTema();
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [entrada, setEntrada] = useState('');
   const [escribiendo, setEscribiendo] = useState(false);
   const [cargandoChat, setCargandoChat] = useState(true);
   const [hasActiveChat, setHasActiveChat] = useState<boolean | null>(null);
   const [titulo, setTitulo] = useState<string | null>(null);
+  const [modoPrivacidad, setModoPrivacidad] = useState(false);
+  const [cambiandoModo, setCambiandoModo] = useState(false);
   const [horasVisibles, setHorasVisibles] = useState<Record<number, boolean>>({});
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
 
@@ -195,6 +222,7 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
         if (!activo) return;
         setMensajes(data.mensajes ?? []);
         setTitulo(data.titulo ?? null);
+        setModoPrivacidad(Boolean(data.privacy_mode));
         setHasActiveChat(true);
       } catch (e) {
         if (!activo) return;
@@ -220,15 +248,36 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
     setHorasVisibles((prev) => ({ ...prev, [indice]: !prev[indice] }));
   }
 
+  async function cambiarModoPrivacidad(enabled: boolean) {
+    setCambiandoModo(true);
+    try {
+      const data = await apiFetch<{ privacy_mode: boolean }>('/rag/chat/mode', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          privacy_mode: enabled,
+          ...(conDataset ? { dataset_name: datasetName } : {}),
+        }),
+      });
+      setModoPrivacidad(Boolean(data.privacy_mode));
+    } catch {
+      // apiFetch ya avisó del error.
+    } finally {
+      setCambiandoModo(false);
+    }
+  }
+
   async function iniciarNuevoChat() {
     setCargandoChat(true);
     try {
-      const data = await apiFetch<{ titulo?: string | null }>('/rag/chat', {
+      const data = await apiFetch<{ titulo?: string | null; privacy_mode?: boolean }>('/rag/chat', {
         method: 'POST',
-        body: JSON.stringify(conDataset ? { dataset_name: datasetName } : {}),
+        body: JSON.stringify(conDataset
+          ? { dataset_name: datasetName, privacy_mode: modoPrivacidad }
+          : { privacy_mode: modoPrivacidad }),
       });
       setMensajes([]);
       setTitulo(data?.titulo ?? null);
+      setModoPrivacidad(Boolean(data?.privacy_mode ?? modoPrivacidad));
       setHorasVisibles({});
       setHasActiveChat(true);
     } catch {
@@ -236,6 +285,7 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
     } finally {
       setCargandoChat(false);
     }
+
   }
 
   async function enviar(texto: string) {
@@ -248,7 +298,9 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
     try {
       const data = await apiFetch<RespuestaEnvio>('/rag/message', {
         method: 'POST',
-        body: JSON.stringify(conDataset ? { mensaje: limpio, dataset_name: datasetName } : { mensaje: limpio }),
+        body: JSON.stringify(conDataset
+          ? { mensaje: limpio, dataset_name: datasetName, privacy_mode: modoPrivacidad }
+          : { mensaje: limpio, privacy_mode: modoPrivacidad }),
       });
       if (data.pregunta?.created_at) {
         setMensajes((prev) => {
@@ -284,22 +336,22 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
       <KeyboardAvoidingView behavior="padding" automaticOffset style={{ flex: 1 }}>
         {cargandoChat ? (
           <View className="flex-1 items-center justify-center">
-            <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, color: '#64748b' }}>
+            <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, color: colores.textoSuave }}>
               Cargando chat…
             </Text>
           </View>
         ) : !hasActiveChat ? (
-          <View className="flex-1 items-center justify-center gap-4 rounded-2xl border border-slate-200 px-6">
-            <MessageCircle size={40} color="#94a3b8" />
+          <View className="flex-1 items-center justify-center gap-4 rounded-2xl border border-slate-200 dark:border-slate-800 px-6">
+            <MessageCircle size={40} color={colores.textoMuted} />
             <View className="items-center gap-1">
-              <Text style={{ fontFamily: FUENTE.medium, fontSize: 14, color: '#0f172a' }}>
+              <Text style={{ fontFamily: FUENTE.medium, fontSize: 14, color: colores.texto }}>
                 No tienes un chat activo
               </Text>
               <Text
                 style={{
                   fontFamily: FUENTE.regular,
                   fontSize: 12,
-                  color: '#64748b',
+                  color: colores.textoSuave,
                   textAlign: 'center',
                 }}
               >
@@ -313,26 +365,36 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
             <View className="flex-row items-center justify-between gap-2 pb-3">
               <Text
                 numberOfLines={1}
-                style={{ flex: 1, fontFamily: FUENTE.medium, fontSize: 14, color: '#0f172a' }}
+                style={{ flex: 1, fontFamily: FUENTE.medium, fontSize: 14, color: colores.texto }}
               >
                 {tituloVisible}
               </Text>
+              <View className="items-center">
+                <Switch
+                  value={modoPrivacidad}
+                  onValueChange={cambiarModoPrivacidad}
+                  disabled={cambiandoModo || escribiendo}
+                />
+                <Text style={{ fontFamily: FUENTE.regular, fontSize: 10, color: colores.textoSuave }}>
+                  {modoPrivacidad ? 'Qwen3 local' : 'Estándar'}
+                </Text>
+              </View>
               <TouchableOpacity
                 onPress={iniciarNuevoChat}
                 disabled={cargandoChat || escribiendo}
                 className={`flex-row items-center rounded-lg border px-3 py-1.5 ${
-                  cargandoChat || escribiendo ? 'border-slate-200' : 'border-slate-300'
+                  cargandoChat || escribiendo ? 'border-slate-200 dark:border-slate-800' : 'border-slate-300 dark:border-slate-700'
                 }`}
                 style={{ gap: 6, opacity: cargandoChat || escribiendo ? 0.5 : 1 }}
               >
-                <Plus size={16} color="#0f172a" />
-                <Text style={{ fontFamily: FUENTE.medium, fontSize: 13, color: '#0f172a' }}>
+                <Plus size={16} color={colores.texto} />
+                <Text style={{ fontFamily: FUENTE.medium, fontSize: 13, color: colores.texto }}>
                   Nueva sesión
                 </Text>
               </TouchableOpacity>
             </View>
 
-            <View className="flex-1 rounded-2xl border border-slate-200">
+            <View className="flex-1 rounded-2xl border border-slate-200 dark:border-slate-800">
               <ScrollView
                 ref={scrollRef}
                 className="flex-1"
@@ -347,7 +409,7 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
                     style={{
                       fontFamily: FUENTE.regular,
                       fontSize: 14,
-                      color: '#94a3b8',
+                      color: colores.textoMuted,
                       textAlign: 'center',
                       paddingVertical: 24,
                     }}
@@ -360,7 +422,7 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
                     <Pressable
                       onPress={() => toggleHora(i)}
                       className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
-                        m.autor === 'usuario' ? 'bg-indigo-600' : 'bg-slate-100'
+                        m.autor === 'usuario' ? 'bg-primario dark:bg-primario-500' : 'bg-slate-100 dark:bg-slate-800'
                       }`}
                     >
                       {m.autor === 'usuario' ? (
@@ -381,7 +443,7 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
                     {horasVisibles[i] && m.created_at ? (
                       <Text
                         className="mt-1"
-                        style={{ fontFamily: FUENTE.regular, fontSize: 11, color: '#94a3b8' }}
+                        style={{ fontFamily: FUENTE.regular, fontSize: 11, color: colores.textoMuted }}
                       >
                         {formatearFechaHora(m.created_at)}
                       </Text>
@@ -395,13 +457,13 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
                 )}
               </ScrollView>
 
-              <View className="border-t border-slate-200 p-3">
+              <View className="border-t border-slate-200 dark:border-slate-800 p-3">
                 <View className="flex-row items-center gap-2">
                   <TextInput
                     value={entrada}
                     onChangeText={setEntrada}
                     placeholder="Escribe tu consulta…"
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={colores.textoMuted}
                     editable={!escribiendo}
                     returnKeyType="send"
                     onSubmitEditing={() => enviar(entrada)}
@@ -410,15 +472,15 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
                       flex: 1,
                       fontFamily: FUENTE.regular,
                       fontSize: 14,
-                      color: '#0f172a',
+                      color: colores.texto,
                     }}
-                    className="h-10 rounded-lg border border-slate-200 bg-white px-3"
+                    className="h-10 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3"
                   />
                   <TouchableOpacity
                     onPress={() => enviar(entrada)}
                     disabled={!entrada.trim() || escribiendo}
                     className={`h-10 w-10 items-center justify-center rounded-lg ${
-                      !entrada.trim() || escribiendo ? 'bg-indigo-300' : 'bg-indigo-600'
+                      !entrada.trim() || escribiendo ? 'bg-primario-300 dark:bg-primario-900' : 'bg-primario dark:bg-primario-500'
                     }`}
                     aria-label="Enviar"
                   >

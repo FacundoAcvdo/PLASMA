@@ -8,6 +8,7 @@ import { LimpiezaConfig } from '@/components/limpieza-config';
 import { LimpiezaResultado } from '@/components/limpieza-resultado';
 import { descargarDatasetLimpio } from '@/lib/limpieza/descarga';
 import type { CleaningConfig, CleaningResult } from '@/lib/limpieza/types';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/cleaning-view.tsx:
 // mismo flujo (adopt/start/consume) y mismas validaciones.
@@ -21,6 +22,7 @@ const DEFAULT_CONFIG: CleaningConfig = {
 };
 
 export default function Limpieza() {
+  const { colores } = useTema();
   const { datasetSeleccionado } = useDataset();
   const { tasks, startTask, adoptTask, consumeTask } = useJobs();
 
@@ -126,23 +128,23 @@ export default function Limpieza() {
         <View className="gap-6 pb-10">
           {/* Header */}
           <View className="flex-row items-center gap-3">
-            <View className="size-10 items-center justify-center rounded-xl bg-indigo-50">
-              <Sparkles size={20} color="#4f46e5" />
+            <View className="size-10 items-center justify-center rounded-xl bg-primario-50 dark:bg-primario-950">
+              <Sparkles size={20} color={colores.primario} />
             </View>
             <View className="min-w-0 flex-1">
               <Titulo>Limpieza de dataset</Titulo>
-              <Text className="mt-0.5 text-sm text-slate-500">
+              <Text className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
                 Prepara tus textos antes de analizarlos quitando el ruido que suele afectar los resultados, como mayúsculas mezcladas, enlaces, menciones, puntuación o palabras muy comunes. Elegí las operaciones que necesites: la plataforma se encarga del orden y así mejoran los análisis posteriores.
               </Text>
             </View>
           </View>
 
           {/* Dataset seleccionado */}
-          <View className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <Text className="text-xs font-medium uppercase tracking-wide text-slate-500">
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4">
+            <Text className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
               Dataset seleccionado
             </Text>
-            <Text className="mt-1 text-sm font-medium text-slate-900" numberOfLines={1}>
+            <Text className="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100" numberOfLines={1}>
               {datasetSeleccionado ?? 'Ningún dataset seleccionado'}
             </Text>
           </View>
@@ -158,7 +160,7 @@ export default function Limpieza() {
             onPress={handleClean}
             disabled={loading}
             className={`flex-row items-center justify-center gap-2 rounded-xl px-6 py-3.5 ${
-              loading ? 'bg-indigo-300' : 'bg-indigo-600'
+              loading ? 'bg-primario-300 dark:bg-primario-900' : 'bg-primario dark:bg-primario-500'
             }`}
           >
             <BrushCleaning size={20} color="#fff" />

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { FUENTE } from '@/components/ui';
+import { useTema } from '@/context/tema-context';
 import type { WordFreq } from '@/lib/wordcloud/types';
 
 // Puerto de TF-U-FRONTEND/components/charts/wordcloud-interactive.tsx.
@@ -37,6 +38,7 @@ function fuentePorRango(rank: number): string {
 }
 
 export function WordCloudInteractive({ frequencies, total_words, max_count }: Props) {
+  const { colores } = useTema();
   const [filtro, setFiltro] = useState('');
   const [ancho, setAncho] = useState(0);
   const [sel, setSel] = useState<Placed | null>(null);
@@ -101,7 +103,7 @@ export function WordCloudInteractive({ frequencies, total_words, max_count }: Pr
   }, [filtered, ancho, max_count]);
 
   if (!frequencies.length) {
-    return <Text className="py-8 text-center text-sm text-slate-500">Sin palabras para mostrar</Text>;
+    return <Text className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">Sin palabras para mostrar</Text>;
   }
 
   const tooltipLeft = sel ? Math.min(sel.x + sel.w + 6, Math.max(0, ancho - 162)) : 0;
@@ -113,22 +115,22 @@ export function WordCloudInteractive({ frequencies, total_words, max_count }: Pr
       <View className="mb-3 flex-row items-center gap-2">
         <TextInput
           placeholder="filtrar palabra..."
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colores.textoMuted}
           value={filtro}
           onChangeText={setFiltro}
           autoCapitalize="none"
           autoCorrect={false}
           style={{ fontFamily: FUENTE.regular }}
-          className="h-8 w-44 rounded-md border border-slate-200 bg-white px-2.5 text-xs text-slate-900"
+          className="h-8 w-44 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 text-xs text-slate-900 dark:text-slate-100"
         />
-        <Text className="text-xs text-slate-500">
+        <Text className="text-xs text-slate-500 dark:text-slate-400">
           {placed.length} / {frequencies.length} visibles
         </Text>
       </View>
 
       {/* nube */}
       <View
-        className="overflow-hidden rounded-lg border border-slate-200 bg-white"
+        className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
         style={{ height: ALTO_MAX }}
         onLayout={(e) => setAncho(e.nativeEvent.layout.width - 2)}
       >
@@ -139,14 +141,14 @@ export function WordCloudInteractive({ frequencies, total_words, max_count }: Pr
               key={w.text}
               onPress={() => setSel(activo ? null : w)}
               className={`absolute items-center justify-center rounded px-0.5 ${
-                activo ? 'bg-slate-100' : ''
+                activo ? 'bg-slate-100 dark:bg-slate-800' : ''
               }`}
               style={{ left: w.x, top: w.y, width: w.w, height: w.h }}
             >
               <Text
                 numberOfLines={1}
                 style={{
-                  color: '#0f172a',
+                  color: colores.texto,
                   fontSize: w.size,
                   opacity: w.opacity,
                   fontFamily: fuentePorRango(w.rank),
@@ -163,38 +165,38 @@ export function WordCloudInteractive({ frequencies, total_words, max_count }: Pr
         {sel && (
           <View
             pointerEvents="none"
-            className="absolute rounded-md border border-slate-200 bg-white px-3 py-2"
+            className="absolute rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2"
             style={{ left: tooltipLeft, top: tooltipTop, width: 156 }}
           >
             <Text
               numberOfLines={1}
-              className="text-sm text-slate-900"
+              className="text-sm text-slate-900 dark:text-slate-100"
               style={{ fontFamily: FUENTE.semibold }}
             >
               {sel.text}
             </Text>
-            <Text className="mt-1 font-mono text-[11px] text-slate-500">
-              apariciones <Text className="text-slate-900">{sel.count}</Text> ({sel.percentage}% del corpus)
+            <Text className="mt-1 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+              apariciones <Text className="text-slate-900 dark:text-slate-100">{sel.count}</Text> ({sel.percentage}% del corpus)
             </Text>
-            <Text className="font-mono text-[11px] text-slate-500">
-              en <Text className="text-slate-900">{sel.doc_frequency}</Text> documentos ({sel.doc_percentage}%)
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+              en <Text className="text-slate-900 dark:text-slate-100">{sel.doc_frequency}</Text> documentos ({sel.doc_percentage}%)
             </Text>
-            <Text className="font-mono text-[11px] text-slate-500">puesto #{sel.rank}</Text>
+            <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">puesto #{sel.rank}</Text>
           </View>
         )}
       </View>
 
       {/* pie */}
       <View className="mt-3 flex-row items-center justify-between gap-2">
-        <Text className="flex-1 text-[11px] text-slate-500">
+        <Text className="flex-1 text-[11px] text-slate-500 dark:text-slate-400">
           {total_words.toLocaleString()} palabras · {frequencies.length} únicas (200 principales)
         </Text>
-        <Text className="font-mono text-[11px] text-slate-500">
+        <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
           máx {max_count} · visibles {placed.length}
         </Text>
       </View>
 
-      <Text className="mt-2 text-center text-[11px] text-slate-500">
+      <Text className="mt-2 text-center text-[11px] text-slate-500 dark:text-slate-400">
         centro = más frecuente · sin rotación · tocá una palabra para estadísticas
       </Text>
     </View>

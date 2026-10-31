@@ -9,6 +9,7 @@ import {
   type DatasetInfo,
 } from '@/context/dataset-context';
 import { Cargando, FUENTE, Screen, Subtitulo, Titulo } from '@/components/ui';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/storage-management-view.tsx.
 // El acordeón web pasa a tarjetas expandibles y los borrados piden
@@ -34,9 +35,9 @@ function tamanoTotal(dataset: DatasetInfo): number {
 
 function Barra({ porcentaje }: { porcentaje: number }) {
   return (
-    <View className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+    <View className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
       <View
-        className="h-full rounded-full bg-indigo-600"
+        className="h-full rounded-full bg-primario dark:bg-primario-500"
         style={{ width: `${clampPercentage(porcentaje)}%` }}
       />
     </View>
@@ -45,10 +46,10 @@ function Barra({ porcentaje }: { porcentaje: number }) {
 
 function StatCard({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
-    <View className="w-[48%] rounded-lg border border-slate-200 bg-slate-50/40 p-3">
-      <Text className="text-xs text-slate-500">{etiqueta}</Text>
+    <View className="w-[48%] rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-800/30 p-3">
+      <Text className="text-xs text-slate-500 dark:text-slate-400">{etiqueta}</Text>
       <Text
-        className="mt-1 text-sm text-slate-900"
+        className="mt-1 text-sm text-slate-900 dark:text-slate-100"
         style={{ fontFamily: FUENTE.semibold }}
         numberOfLines={1}
       >
@@ -67,17 +68,18 @@ function Desglose({
   bytes: number;
   porcentaje: number;
 }) {
+  const { colores } = useTema();
   return (
     <View className="gap-2">
       <View className="flex-row items-center justify-between gap-3">
         <View>
-          <Text style={{ fontFamily: FUENTE.medium, fontSize: 14, color: '#0f172a' }}>
+          <Text style={{ fontFamily: FUENTE.medium, fontSize: 14, color: colores.texto }}>
             {etiqueta}
           </Text>
-          <Text className="text-xs text-slate-500">{formatBytes(bytes)}</Text>
+          <Text className="text-xs text-slate-500 dark:text-slate-400">{formatBytes(bytes)}</Text>
         </View>
-        <View className="rounded-full bg-slate-100 px-2 py-0.5">
-          <Text className="text-xs text-slate-600">{porcentaje.toFixed(2)}%</Text>
+        <View className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5">
+          <Text className="text-xs text-slate-600 dark:text-slate-400">{porcentaje.toFixed(2)}%</Text>
         </View>
       </View>
       <Barra porcentaje={porcentaje} />
@@ -92,6 +94,7 @@ type Confirmacion = {
 };
 
 export default function Almacenamiento() {
+  const { colores } = useTema();
   const { data: datasets, isLoading } = useDatasetsQuery();
   const invalidar = useInvalidarDatasets();
 
@@ -179,20 +182,20 @@ export default function Almacenamiento() {
         <Subtitulo>Espacio utilizado por tus datasets.</Subtitulo>
 
         <View className="gap-4">
-          <View className="gap-4 rounded-xl border border-slate-200 bg-white p-4">
+          <View className="gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
             <View className="flex-row items-start justify-between gap-3">
               <View className="flex-1">
                 <Text
-                  style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}
+                  style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}
                 >
                   Almacenamiento
                 </Text>
-                <Text className="mt-1 text-sm text-slate-500">
+                <Text className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   Espacio utilizado por tus datasets
                 </Text>
               </View>
-              <View className="rounded-full bg-slate-100 px-2.5 py-1">
-                <Text className="text-sm text-slate-700">
+              <View className="rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1">
+                <Text className="text-sm text-slate-700 dark:text-slate-300">
                   {percentageUsed.toFixed(1)}% utilizado
                 </Text>
               </View>
@@ -202,15 +205,15 @@ export default function Almacenamiento() {
               <View className="flex-row items-end justify-between gap-3">
                 <View className="flex-row items-baseline">
                   <Text
-                    style={{ fontFamily: FUENTE.bold, fontSize: 24, color: '#0f172a' }}
+                    style={{ fontFamily: FUENTE.bold, fontSize: 24, color: colores.texto }}
                   >
                     {formatBytes(totalDatasetSize)}
                   </Text>
-                  <Text className="ml-1 text-sm text-slate-500">
+                  <Text className="ml-1 text-sm text-slate-500 dark:text-slate-400">
                     / {formatBytes(TOTAL_STORAGE)}
                   </Text>
                 </View>
-                <Text className="text-sm text-slate-500">
+                <Text className="text-sm text-slate-500 dark:text-slate-400">
                   {formatBytes(availableStorage)} disponibles
                 </Text>
               </View>
@@ -233,8 +236,8 @@ export default function Almacenamiento() {
                 disabled={eliminandoTodos || (datasets?.length ?? 0) === 0}
                 className={`flex-row items-center justify-center gap-2 rounded-xl px-4 py-3 ${
                   eliminandoTodos || (datasets?.length ?? 0) === 0
-                    ? 'bg-red-300'
-                    : 'bg-red-600'
+                    ? 'bg-red-300 dark:bg-red-900'
+                    : 'bg-red-600 dark:bg-red-500'
                 }`}
               >
                 {eliminandoTodos ? (
@@ -251,23 +254,23 @@ export default function Almacenamiento() {
             </View>
           </View>
 
-          <View className="rounded-xl border border-slate-200 bg-white">
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <View className="px-4 pb-3 pt-4">
-              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                 Datasets almacenados
               </Text>
-              <Text className="mt-1 text-sm text-slate-500">
+              <Text className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Haz click en un dataset para ver su desglose.
               </Text>
             </View>
 
             <View className="gap-3 px-4 pb-4">
               {ordenados.length === 0 ? (
-                <View className="items-center rounded-lg border border-dashed border-slate-300 p-6">
-                  <Text style={{ fontFamily: FUENTE.medium, fontSize: 14, color: '#0f172a' }}>
+                <View className="items-center rounded-lg border border-dashed border-slate-300 dark:border-slate-700 p-6">
+                  <Text style={{ fontFamily: FUENTE.medium, fontSize: 14, color: colores.texto }}>
                     No tienes datasets almacenados
                   </Text>
-                  <Text className="mt-1 text-center text-sm text-slate-500">
+                  <Text className="mt-1 text-center text-sm text-slate-500 dark:text-slate-400">
                     Cuando subas un dataset aparecerá aquí.
                   </Text>
                 </View>
@@ -290,7 +293,7 @@ export default function Almacenamiento() {
                   return (
                     <View
                       key={dataset.dataset_id}
-                      className="gap-3 rounded-lg border border-slate-200 p-3"
+                      className="gap-3 rounded-lg border border-slate-200 dark:border-slate-800 p-3"
                     >
                       <TouchableOpacity
                         onPress={() => setAbierto(expandido ? null : dataset.dataset_id)}
@@ -299,19 +302,19 @@ export default function Almacenamiento() {
                         <View className="flex-row items-center justify-between gap-3">
                           <Text
                             numberOfLines={1}
-                            className="min-w-0 flex-1 text-slate-900"
+                            className="min-w-0 flex-1 text-slate-900 dark:text-slate-100"
                             style={{ fontFamily: FUENTE.medium, fontSize: 14 }}
                           >
                             {dataset.dataset_name}
                           </Text>
                           <View className="flex-row shrink-0 items-center gap-2">
-                            <Text className="text-sm text-slate-500">
+                            <Text className="text-sm text-slate-500 dark:text-slate-400">
                               {formatBytes(datasetTotal)}
                             </Text>
                             {expandido ? (
-                              <ChevronUp size={16} color="#64748b" />
+                              <ChevronUp size={16} color={colores.textoSuave} />
                             ) : (
-                              <ChevronDown size={16} color="#64748b" />
+                              <ChevronDown size={16} color={colores.textoSuave} />
                             )}
                           </View>
                         </View>
@@ -320,28 +323,28 @@ export default function Almacenamiento() {
 
                       {expandido && (
                         <View className="gap-5 pt-1">
-                          <View className="flex-row flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50/40 p-3">
+                          <View className="flex-row flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-800/30 p-3">
                             <View>
-                              <Text className="text-xs text-slate-500">Tamaño total</Text>
+                              <Text className="text-xs text-slate-500 dark:text-slate-400">Tamaño total</Text>
                               <Text
                                 style={{
                                   fontFamily: FUENTE.semibold,
                                   fontSize: 18,
-                                  color: '#0f172a',
+                                  color: colores.texto,
                                 }}
                               >
                                 {formatBytes(datasetTotal)}
                               </Text>
                             </View>
                             <View>
-                              <Text className="text-xs text-slate-500">
+                              <Text className="text-xs text-slate-500 dark:text-slate-400">
                                 Del almacenamiento
                               </Text>
                               <Text
                                 style={{
                                   fontFamily: FUENTE.semibold,
                                   fontSize: 18,
-                                  color: '#0f172a',
+                                  color: colores.texto,
                                 }}
                               >
                                 {storagePercentage.toFixed(2)}%
@@ -371,8 +374,8 @@ export default function Almacenamiento() {
                               disabled={eliminandoDataset === dataset.dataset_id}
                               className={`flex-row items-center justify-center gap-2 rounded-lg px-3 py-2.5 ${
                                 eliminandoDataset === dataset.dataset_id
-                                  ? 'bg-red-300'
-                                  : 'bg-red-600'
+                                  ? 'bg-red-300 dark:bg-red-900'
+                                  : 'bg-red-600 dark:bg-red-500'
                               }`}
                             >
                               {eliminandoDataset === dataset.dataset_id ? (
@@ -411,18 +414,18 @@ export default function Almacenamiento() {
         onRequestClose={() => setConfirmacion(null)}
       >
         <View className="flex-1 items-center justify-center bg-black/50 px-6">
-          <View className="w-full rounded-2xl bg-white p-5">
+          <View className="w-full rounded-2xl bg-white dark:bg-slate-900 p-5">
             <Text
               style={{
                 fontFamily: FUENTE.semibold,
                 fontSize: 17,
-                color: '#0f172a',
+                color: colores.texto,
                 marginBottom: 8,
               }}
             >
               {confirmacion?.titulo}
             </Text>
-            <Text className="mb-5 text-sm leading-relaxed text-slate-600">
+            <Text className="mb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
               {confirmacion?.descripcion}
             </Text>
             <TouchableOpacity
@@ -431,7 +434,7 @@ export default function Almacenamiento() {
                 setConfirmacion(null);
                 accion?.();
               }}
-              className="flex-row items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3.5"
+              className="flex-row items-center justify-center gap-2 rounded-xl bg-red-600 dark:bg-red-500 px-4 py-3.5"
             >
               <Trash2 size={16} color="#fff" />
               <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#fff' }}>
@@ -440,9 +443,9 @@ export default function Almacenamiento() {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setConfirmacion(null)}
-              className="mt-2 items-center rounded-xl border border-slate-200 px-4 py-3.5"
+              className="mt-2 items-center rounded-xl border border-slate-200 dark:border-slate-800 px-4 py-3.5"
             >
-              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                 Cancelar
               </Text>
             </TouchableOpacity>

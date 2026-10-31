@@ -15,6 +15,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { DatasetProvider } from '@/context/dataset-context';
 import { JobsProvider } from '@/context/jobs-context';
+import { TemaProvider, useTema } from '@/context/tema-context';
 import { MenuLateral } from '@/components/MenuLateral';
 import { LogoHeader } from '@/components/ui';
 import { Toaster } from '@/components/Toaster';
@@ -43,23 +44,39 @@ export default function RootLayout() {
   if (!fuentes) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <KeyboardProvider>
+    <SafeAreaProvider>
+      <KeyboardProvider>
+        <TemaProvider>
           <QueryClientProvider client={queryClient}>
             <JobsProvider>
               <DatasetProvider>
-                <StatusBar style="dark" />
-                <Drawer
-                  drawerContent={({ navigation }) => <MenuLateral navigation={navigation} />}
-                  screenOptions={{
-                    headerTintColor: '#0f172a',
-                    headerTitleStyle: { fontFamily: 'Inter_600SemiBold' },
-                    headerTitle: '',
-                    headerRight: () => <LogoHeader />,
-                    drawerStyle: { width: 300 },
-                  }}
-                >
+                <Navegacion />
+              </DatasetProvider>
+            </JobsProvider>
+          </QueryClientProvider>
+        </TemaProvider>
+      </KeyboardProvider>
+    </SafeAreaProvider>
+  );
+}
+
+function Navegacion() {
+  const { oscuro, colores } = useTema();
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colores.fondo }}>
+      <StatusBar style={oscuro ? 'light' : 'dark'} />
+      <Drawer
+        drawerContent={({ navigation }) => <MenuLateral navigation={navigation} />}
+        screenOptions={{
+          headerTintColor: colores.texto,
+          headerStyle: { backgroundColor: colores.fondo },
+          headerTitleStyle: { fontFamily: 'Inter_600SemiBold' },
+          headerTitle: '',
+          headerRight: () => <LogoHeader />,
+          drawerStyle: { width: 300, backgroundColor: colores.fondo },
+        }}
+      >
                   <Drawer.Screen
                     name="index"
                     options={{ drawerItemStyle: { display: 'none' }, headerShown: false }}
@@ -90,13 +107,8 @@ export default function RootLayout() {
                     options={{ title: 'Almacenamiento' }}
                   />
                   <Drawer.Screen name="func/[id]" options={{ title: 'Sección' }} />
-                </Drawer>
-                <Toaster />
-              </DatasetProvider>
-            </JobsProvider>
-          </QueryClientProvider>
-        </KeyboardProvider>
-      </SafeAreaProvider>
+      </Drawer>
+      <Toaster />
     </GestureHandlerRootView>
   );
 }

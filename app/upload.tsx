@@ -19,6 +19,7 @@ import { DatasetPreview } from '@/components/DatasetPreview';
 import { Selector } from '@/components/Selector';
 import { Boton, CajaError, CajaExito, Campo, Screen, Subtitulo, Titulo } from '@/components/ui';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { useTema } from '@/context/tema-context';
 
 type PosiblePreview = DatasetPreviewData & {
   sourceFormat?: AutoConvertSourceFormat;
@@ -124,14 +125,15 @@ function FilaSwitch({
   onCambiar: (v: boolean) => void;
 }) {
   return (
-    <View className="flex-row items-center justify-between rounded-lg border border-slate-200 px-3 py-2.5">
-      <Text className="text-sm font-medium text-slate-900">{titulo}</Text>
+    <View className="flex-row items-center justify-between rounded-lg border border-slate-200 dark:border-slate-800 px-3 py-2.5">
+      <Text className="text-sm font-medium text-slate-900 dark:text-slate-100">{titulo}</Text>
       <Switch value={valor} disabled={deshabilitado} onValueChange={onCambiar} />
     </View>
   );
 }
 
 export default function Upload() {
+  const { colores } = useTema();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { tasks, startTask, adoptTask, consumeTask } = useJobs();
@@ -481,11 +483,11 @@ export default function Upload() {
 
         <Modal visible={especialPendiente !== null} transparent animationType="fade">
           <View className="flex-1 items-center justify-center bg-black/50 px-6">
-            <View className="w-full rounded-2xl bg-white p-5">
-              <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 17, color: '#0f172a', marginBottom: 8 }}>
+            <View className="w-full rounded-2xl bg-white dark:bg-slate-900 p-5">
+              <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 17, color: colores.texto, marginBottom: 8 }}>
                 {especialPendiente ? CONFIG_ARCHIVO_ESPECIAL[especialPendiente.tipo].titulo : ''}
               </Text>
-              <Text className="mb-5 text-sm leading-relaxed text-slate-600">
+              <Text className="mb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                 {especialPendiente ? CONFIG_ARCHIVO_ESPECIAL[especialPendiente.tipo].descripcion : ''}
               </Text>
               <Boton
@@ -510,8 +512,8 @@ export default function Upload() {
         <Boton titulo={nombreArchivo ? `Archivo: ${nombreArchivo}` : 'Elegir archivo'} onPress={elegirArchivo} />
 
         {formatoAutomatico && (
-          <View className="rounded-lg bg-indigo-50 px-3 py-2">
-            <Text className="text-xs font-semibold text-indigo-700">
+          <View className="rounded-lg bg-primario-50 dark:bg-primario-950 px-3 py-2">
+            <Text className="text-xs font-semibold text-primario-700 dark:text-primario-300">
               {ETIQUETA_FORMATO[formatoAutomatico]}
             </Text>
           </View>
@@ -522,7 +524,7 @@ export default function Upload() {
         {cargandoPreview && (
           <View className="flex-row items-center gap-2">
             <ActivityIndicator />
-            <Text className="text-sm text-slate-500">Leyendo archivo…</Text>
+            <Text className="text-sm text-slate-500 dark:text-slate-400">Leyendo archivo…</Text>
           </View>
         )}
 
@@ -534,7 +536,7 @@ export default function Upload() {
 
         {preview && (
           <View>
-            <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 14, color: '#0f172a', marginBottom: 6 }}>
+            <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 14, color: colores.texto, marginBottom: 6 }}>
               Nombre del dataset
             </Text>
             <View className="flex-row items-center gap-2">
@@ -542,22 +544,22 @@ export default function Upload() {
                 value={nombreDataset}
                 onChangeText={(t) => setNombreDataset(sanitizarNombreUsuario(t))}
                 placeholder="Dataset"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={colores.textoMuted}
                 autoCapitalize="none"
                 autoCorrect={false}
-                style={{ fontFamily: 'Inter_400Regular', fontSize: 14, color: '#0f172a' }}
-                className="h-12 flex-1 rounded-lg border border-slate-200 bg-white px-4"
+                style={{ fontFamily: 'Inter_400Regular', fontSize: 14, color: colores.texto }}
+                className="h-12 flex-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4"
               />
-              <View className="h-12 items-center justify-center rounded-lg bg-slate-100 px-3">
-                <Text className="text-sm text-slate-500">.{extensionSubida}</Text>
+              <View className="h-12 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 px-3">
+                <Text className="text-sm text-slate-500 dark:text-slate-400">.{extensionSubida}</Text>
               </View>
             </View>
           </View>
         )}
 
         {mapeoAutomatico && (
-          <View className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
-            <Text className="text-xs text-slate-500">
+          <View className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-3 py-2">
+            <Text className="text-xs text-slate-500 dark:text-slate-400">
               {formatoAutomatico === 'whatsapp-chat'
                 ? 'Este dataset se generó automáticamente a partir de un chat de WhatsApp, así que el mapeo de columnas queda fijo.'
                 : 'Este dataset se generó automáticamente a partir de las carpetas del .zip, así que el mapeo de columnas queda fijo.'}
@@ -656,17 +658,17 @@ export default function Upload() {
         )}
 
         {estado === 'cargando' && (
-          <View className="mt-4 flex-row items-center gap-2 rounded-xl bg-indigo-50 px-4 py-3">
+          <View className="mt-4 flex-row items-center gap-2 rounded-xl bg-primario-50 dark:bg-primario-950 px-4 py-3">
             <ActivityIndicator />
-            <Text className="flex-1 text-sm text-indigo-900">
+            <Text className="flex-1 text-sm text-primario-900 dark:text-primario-200">
               Esperando resultados… podés seguir navegando, te avisaremos.
             </Text>
           </View>
         )}
         {estado === 'listo' && (
           <CajaExito>
-            <Text className="text-sm font-semibold text-emerald-700">Dataset cargado correctamente</Text>
-            <Text className="text-sm text-slate-500">
+            <Text className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Dataset cargado correctamente</Text>
+            <Text className="text-sm text-slate-500 dark:text-slate-400">
               {preview?.totalRows.toLocaleString('es')} registros · {preview?.columns.length} columnas detectadas.
             </Text>
             <Boton titulo="Ver datasets" onPress={() => router.replace('/datasets')} />

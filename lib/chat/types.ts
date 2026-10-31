@@ -10,6 +10,7 @@ export type Mensaje = {
 export type ChatActivo = {
   chat_id: string;
   titulo?: string | null;
+  privacy_mode?: boolean;
   mensajes: Mensaje[];
 };
 

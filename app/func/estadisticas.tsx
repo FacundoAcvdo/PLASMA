@@ -20,6 +20,7 @@ import type {
   SentenceFreqItem,
   SentenceStats,
 } from '@/lib/eda/types';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/stats-view.tsx:
 // mismo flujo (adopt/start/getResults) y mismo contenido por tarjeta.
@@ -52,13 +53,14 @@ function Tarjeta({
   subtitulo: string;
   children: ReactNode;
 }) {
+  const { colores } = useTema();
   return (
-    <View className="rounded-xl border border-slate-200 bg-white">
+    <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
       <View className="px-4 pb-1 pt-4">
-        <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: '#0f172a' }}>
+        <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: colores.texto }}>
           {titulo}
         </Text>
-        <Text className="mt-0.5 text-xs text-slate-500">{subtitulo}</Text>
+        <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{subtitulo}</Text>
       </View>
       <View className="gap-4 px-4 pb-4 pt-2">{children}</View>
     </View>
@@ -72,18 +74,19 @@ function Tabla({
   columnas: { titulo: string; alinear: 'left' | 'right' }[];
   filas: (string | number | null | undefined)[][];
 }) {
+  const { colores } = useTema();
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator className="rounded-lg border border-slate-200">
+    <ScrollView horizontal showsHorizontalScrollIndicator className="rounded-lg border border-slate-200 dark:border-slate-800">
       <View>
-        <View className="flex-row border-b border-slate-200 bg-slate-50">
+        <View className="flex-row border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">
           {columnas.map((c, i) => (
             <View
               key={i}
               style={{ width: 120 }}
-              className={`px-3 py-2 ${c.alinear === 'right' ? 'items-end' : 'items-start'} ${i % 2 === 1 ? 'bg-slate-100/70' : ''}`}
+              className={`px-3 py-2 ${c.alinear === 'right' ? 'items-end' : 'items-start'} ${i % 2 === 1 ? 'bg-slate-100/70 dark:bg-slate-800/60' : ''}`}
             >
               <Text
-                style={{ fontFamily: 'Inter_500Medium', fontSize: 13, color: '#0f172a' }}
+                style={{ fontFamily: 'Inter_500Medium', fontSize: 13, color: colores.texto }}
                 className={c.alinear === 'right' ? 'text-right' : 'text-left'}
               >
                 {c.titulo}
@@ -94,15 +97,15 @@ function Tabla({
         {filas.map((fila, fi) => (
           <View
             key={fi}
-            className={`flex-row ${fi < filas.length - 1 ? 'border-b border-slate-100' : ''}`}
+            className={`flex-row ${fi < filas.length - 1 ? 'border-b border-slate-100 dark:border-slate-800' : ''}`}
           >
             {fila.map((valor, ci) => (
               <View
                 key={ci}
                 style={{ width: 120 }}
-                className={`px-3 py-2 ${columnas[ci]?.alinear === 'right' ? 'items-end' : 'items-start'} ${ci % 2 === 1 ? 'bg-slate-50/70' : 'bg-white'}`}
+                className={`px-3 py-2 ${columnas[ci]?.alinear === 'right' ? 'items-end' : 'items-start'} ${ci % 2 === 1 ? 'bg-slate-50/70 dark:bg-slate-800/40' : 'bg-white dark:bg-slate-900'}`}
               >
-                <Text className="text-[13px] text-slate-700">
+                <Text className="text-[13px] text-slate-700 dark:text-slate-300">
                   {valor ?? ''}
                 </Text>
               </View>
@@ -138,6 +141,7 @@ const COLUMNAS_CLASE = [
 ] as const;
 
 export default function Estadisticas() {
+  const { colores } = useTema();
   const router = useRouter();
   const [estado, setEstado] = useState<Estado>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -242,7 +246,7 @@ export default function Estadisticas() {
     return (
       <Screen>
         <Titulo>Estadísticas generales</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Seleccioná un dataset para ver sus estadísticas.
         </Text>
         <Boton titulo="Elegir dataset" onPress={() => router.push('/datasets')} />
@@ -254,26 +258,26 @@ export default function Estadisticas() {
     return (
       <Screen>
         <Titulo>Estadísticas generales</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Resumen descriptivo del dataset: {datasetSeleccionado}
         </Text>
-        <View className="items-center rounded-xl border border-slate-200 bg-white px-6 py-14">
-          <View className="size-14 items-center justify-center rounded-2xl bg-indigo-50">
+        <View className="items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-14">
+          <View className="size-14 items-center justify-center rounded-2xl bg-primario-50 dark:bg-primario-950">
             {estado === 'running' ? (
-              <ActivityIndicator size="large" color="#4f46e5" />
+              <ActivityIndicator size="large" color={colores.primario} />
             ) : (
-              <ChartColumn size={24} color="#4f46e5" />
+              <ChartColumn size={24} color={colores.primario} />
             )}
           </View>
           <Text
-            className="mt-4 text-center text-sm text-slate-900"
+            className="mt-4 text-center text-sm text-slate-900 dark:text-slate-100"
             style={{ fontFamily: 'Inter_500Medium' }}
           >
             {error ?? (estado === 'running'
               ? 'Esperando resultados…'
               : 'Esta operación no se ejecuta automáticamente')}
           </Text>
-          <Text className="mt-1 max-w-md text-center text-sm text-slate-500">
+          <Text className="mt-1 max-w-md text-center text-sm text-slate-500 dark:text-slate-400">
             {error
               ? 'Revisá la conexión y volvé a calcular las estadísticas.'
               : estado === 'running'
@@ -299,14 +303,14 @@ export default function Estadisticas() {
           <View className="flex-row items-center justify-between gap-3">
             <View className="flex-row items-center gap-2">
               <View className="size-2 rounded-full bg-emerald-500" />
-              <Text className="text-sm text-slate-500">Análisis completado</Text>
+              <Text className="text-sm text-slate-500 dark:text-slate-400">Análisis completado</Text>
             </View>
             <TouchableOpacity
               onPress={ejecutarEda}
-              className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2"
+              className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2"
             >
-              <RotateCw size={14} color="#0f172a" />
-              <Text className="text-sm text-slate-900">Volver a ejecutar</Text>
+              <RotateCw size={14} color={colores.texto} />
+              <Text className="text-sm text-slate-900 dark:text-slate-100">Volver a ejecutar</Text>
             </TouchableOpacity>
           </View>
 

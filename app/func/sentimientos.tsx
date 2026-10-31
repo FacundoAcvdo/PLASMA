@@ -33,6 +33,7 @@ import {
   type PeriodoEmocion,
   type ResultadoSentimientos,
 } from '@/lib/evolution/sentiment';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/sentiment-time-view.tsx:
 // mismo flujo (users + emotions-evolution job) y mismo contenido.
@@ -41,25 +42,26 @@ import {
 type Estado = 'idle' | 'running' | 'done';
 
 function EmotionPeriodCard({ periodo, orden }: { periodo: PeriodoEmocion; orden?: string[] }) {
+  const { colores } = useTema();
   const lista = emocionesOrdenadas(periodo.emotions, orden).sort((a, b) => b.valor - a.valor);
   const dominante = emocionDominante(periodo.emotions);
 
   return (
-    <View className="w-full rounded-xl border border-slate-200 bg-white p-4">
-      <View className="flex-row items-start justify-between border-b border-slate-100 pb-3">
+    <View className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+      <View className="flex-row items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
         <View className="min-w-0 flex-1 pr-2">
-          <Text numberOfLines={1} style={{ fontFamily: FUENTE.semibold, fontSize: 14, color: '#0f172a' }}>
+          <Text numberOfLines={1} style={{ fontFamily: FUENTE.semibold, fontSize: 14, color: colores.texto }}>
             {periodo.etiqueta}
           </Text>
           {periodo.fecha_inicio ? (
-            <Text numberOfLines={1} className="mt-0.5 text-[11px] text-slate-500">
+            <Text numberOfLines={1} className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
               {formatearFecha(periodo.fecha_inicio)} — {formatearFecha(periodo.fecha_fin)}
             </Text>
           ) : null}
         </View>
-        <View className="flex-row items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1">
-          <MessageSquare size={13} color="#64748b" />
-          <Text className="text-xs text-slate-600">
+        <View className="flex-row items-center gap-1.5 rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-1">
+          <MessageSquare size={13} color={colores.textoSuave} />
+          <Text className="text-xs text-slate-600 dark:text-slate-400">
             {periodo.cantidad_mensajes.toLocaleString()}
           </Text>
         </View>
@@ -67,13 +69,13 @@ function EmotionPeriodCard({ periodo, orden }: { periodo: PeriodoEmocion; orden?
 
       <View className="gap-2 pt-3">
         {lista.length === 0 ? (
-          <Text className="text-xs text-slate-500">Sin emociones para este bloque.</Text>
+          <Text className="text-xs text-slate-500 dark:text-slate-400">Sin emociones para este bloque.</Text>
         ) : (
           <>
             {dominante && (
-              <Text className="text-[11px] text-slate-500">
+              <Text className="text-[11px] text-slate-500 dark:text-slate-400">
                 Predomina{' '}
-                <Text className="text-slate-900" style={{ fontFamily: FUENTE.medium }}>
+                <Text className="text-slate-900 dark:text-slate-100" style={{ fontFamily: FUENTE.medium }}>
                   {etiquetaEmocion(dominante)}
                 </Text>
               </Text>
@@ -85,14 +87,14 @@ function EmotionPeriodCard({ periodo, orden }: { periodo: PeriodoEmocion; orden?
                   <View
                     key={emocion}
                     className={`flex-row items-center rounded-md px-2 py-0.5 ${
-                      esDominante ? 'bg-indigo-600' : 'bg-slate-100'
+                      esDominante ? 'bg-primario dark:bg-primario-500' : 'bg-slate-100 dark:bg-slate-800'
                     }`}
                   >
-                    <Text className={`text-xs ${esDominante ? 'text-white' : 'text-slate-700'}`}>
+                    <Text className={`text-xs ${esDominante ? 'text-white' : 'text-slate-700 dark:text-slate-300'}`}>
                       {etiquetaEmocion(emocion)}
                     </Text>
                     <Text
-                      className={`ml-1 text-xs ${esDominante ? 'text-white' : 'text-slate-700'}`}
+                      className={`ml-1 text-xs ${esDominante ? 'text-white' : 'text-slate-700 dark:text-slate-300'}`}
                       style={{ fontFamily: FUENTE.medium }}
                     >
                       {formatearPorcentaje(valor)}
@@ -109,6 +111,7 @@ function EmotionPeriodCard({ periodo, orden }: { periodo: PeriodoEmocion; orden?
 }
 
 export default function Sentimientos() {
+  const { colores } = useTema();
   const router = useRouter();
   const { datasetSeleccionado } = useDataset();
   const { tasks, startTask, adoptTask, consumeTask } = useJobs();
@@ -235,7 +238,7 @@ export default function Sentimientos() {
     return (
       <Screen>
         <Titulo>Sentimientos en el tiempo</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Seleccioná un dataset para ver la evolución de emociones de sus participantes.
         </Text>
         <Boton titulo="Elegir dataset" onPress={() => router.push('/datasets')} />
@@ -257,25 +260,25 @@ export default function Sentimientos() {
           {!resultado ? (
             <>
               {/* Participantes */}
-              <View className="rounded-xl border border-slate-200 bg-white">
+              <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                 <View className="px-4 pb-3 pt-4">
-                  <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+                  <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                     Participantes
                   </Text>
-                  <Text className="mt-1 text-xs text-slate-500">
+                  <Text className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                     Seleccioná un participante para aplicar la evolución de emociones en el tiempo.
                   </Text>
                 </View>
 
                 <View className="px-4 pb-4">
                   {cargandoUsuarios ? (
-                    <Text className="py-8 text-center text-sm text-slate-500">
+                    <Text className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">
                       Buscando participantes…
                     </Text>
                   ) : usuarios.length === 0 ? (
                     <View className="items-center py-8">
-                      <Users size={20} color="#94a3b8" />
-                      <Text className="mt-2 text-center text-sm text-slate-500">
+                      <Users size={20} color={colores.textoMuted} />
+                      <Text className="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
                         No se encontraron participantes en este dataset.
                       </Text>
                     </View>
@@ -283,7 +286,7 @@ export default function Sentimientos() {
                     <View className="gap-3">
                       {mostrarBuscador && (
                         <CampoConIcono
-                          icono={<Search size={16} color="#94a3b8" />}
+                          icono={<Search size={16} color={colores.textoMuted} />}
                           placeholder="Buscar participante..."
                           value={busqueda}
                           onChangeText={setBusqueda}
@@ -293,7 +296,7 @@ export default function Sentimientos() {
                         />
                       )}
 
-                      <View className="rounded-lg border border-slate-200">
+                      <View className="rounded-lg border border-slate-200 dark:border-slate-800">
                         <ScrollView
                           style={{ maxHeight: 220 }}
                           nestedScrollEnabled
@@ -309,28 +312,28 @@ export default function Sentimientos() {
                                   disabled={configuracionBloqueada}
                                   onPress={() => setRemitenteSeleccionado(usuario.remitente)}
                                   className={`flex-row items-center justify-between gap-3 rounded-md px-3 py-2.5 ${
-                                    seleccionado ? 'bg-indigo-600' : 'bg-transparent'
+                                    seleccionado ? 'bg-primario dark:bg-primario-500' : 'bg-transparent'
                                   } ${configuracionBloqueada ? 'opacity-60' : ''}`}
                                 >
                                   <View className="min-w-0 flex-1 flex-row items-center gap-2.5">
                                     <View
                                       className={`size-8 items-center justify-center rounded-full ${
-                                        seleccionado ? 'bg-white/20' : 'bg-indigo-50'
+                                        seleccionado ? 'bg-white/20' : 'bg-primario-50 dark:bg-primario-950'
                                       }`}
                                     >
-                                      <User size={16} color={seleccionado ? '#ffffff' : '#4f46e5'} />
+                                      <User size={16} color={seleccionado ? '#ffffff' : colores.primario} />
                                     </View>
                                     <View className="min-w-0 flex-1">
                                       <Text
                                         numberOfLines={1}
-                                        className={seleccionado ? 'text-white' : 'text-slate-900'}
+                                        className={seleccionado ? 'text-white' : 'text-slate-900 dark:text-slate-100'}
                                         style={{ fontFamily: FUENTE.medium, fontSize: 14 }}
                                       >
                                         {usuario.remitente}
                                       </Text>
                                       <Text
                                         className={`text-xs ${
-                                          seleccionado ? 'text-white/70' : 'text-slate-500'
+                                          seleccionado ? 'text-white/70' : 'text-slate-500 dark:text-slate-400'
                                         }`}
                                       >
                                         {usuario.cantidad_mensajes.toLocaleString()} mensajes
@@ -349,8 +352,8 @@ export default function Sentimientos() {
 
                             {usuariosFiltrados.length === 0 && (
                               <View className="items-center py-8">
-                                <Search size={20} color="#94a3b8" />
-                                <Text className="mt-2 text-center text-sm text-slate-500">
+                                <Search size={20} color={colores.textoMuted} />
+                                <Text className="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
                                   No se encontraron participantes.
                                 </Text>
                               </View>
@@ -360,14 +363,14 @@ export default function Sentimientos() {
                       </View>
 
                       <View className="flex-row items-center justify-between gap-3 px-1">
-                        <Text className="text-xs text-slate-500">
+                        <Text className="text-xs text-slate-500 dark:text-slate-400">
                           {usuarios.length}{' '}
                           {usuarios.length === 1 ? 'participante' : 'participantes'}
                         </Text>
                         {remitenteSeleccionado && (
-                          <Text numberOfLines={1} className="shrink text-xs text-slate-500">
+                          <Text numberOfLines={1} className="shrink text-xs text-slate-500 dark:text-slate-400">
                             Seleccionado:{' '}
-                            <Text className="text-slate-900" style={{ fontFamily: FUENTE.semibold }}>
+                            <Text className="text-slate-900 dark:text-slate-100" style={{ fontFamily: FUENTE.semibold }}>
                               {remitenteSeleccionado}
                             </Text>
                           </Text>
@@ -379,19 +382,19 @@ export default function Sentimientos() {
               </View>
 
               {/* Runner */}
-              <View className="items-center rounded-xl border border-slate-200 bg-white px-6 py-14">
-                <View className="size-14 items-center justify-center rounded-2xl bg-indigo-50">
-                  <TrendingUp size={24} color="#4f46e5" />
+              <View className="items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-14">
+                <View className="size-14 items-center justify-center rounded-2xl bg-primario-50 dark:bg-primario-950">
+                  <TrendingUp size={24} color={colores.primario} />
                 </View>
                 <Text
-                  className="mt-4 text-center text-sm text-slate-900"
+                  className="mt-4 text-center text-sm text-slate-900 dark:text-slate-100"
                   style={{ fontFamily: FUENTE.medium }}
                 >
                   {estado === 'running'
                     ? 'Esperando resultados…'
                     : 'Esta operación no se ejecuta automáticamente'}
                 </Text>
-                <Text className="mt-1 max-w-md text-center text-sm text-slate-500">
+                <Text className="mt-1 max-w-md text-center text-sm text-slate-500 dark:text-slate-400">
                   {estado === 'running'
                     ? 'Podés navegar a otra pantalla: te avisaremos con una notificación cuando termine.'
                     : remitenteSeleccionado
@@ -409,54 +412,54 @@ export default function Sentimientos() {
             </>
           ) : (
             /* Resultado */
-            <View className="rounded-xl border border-slate-200 bg-white">
-              <View className="gap-4 border-b border-slate-100 bg-slate-50 px-4 py-4">
+            <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+              <View className="gap-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-4">
                 <View className="gap-1.5">
                   <View className="flex-row flex-wrap items-center gap-2">
-                    <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+                    <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                       Evolución de emociones
                     </Text>
-                    <View className="flex-row items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2 py-0.5">
-                      <User size={13} color="#4f46e5" />
-                      <Text className="text-xs text-slate-600">{resultado.remitente}</Text>
+                    <View className="flex-row items-center gap-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2 py-0.5">
+                      <User size={13} color={colores.primario} />
+                      <Text className="text-xs text-slate-600 dark:text-slate-400">{resultado.remitente}</Text>
                     </View>
                   </View>
 
                   <View className="mt-1 flex-row flex-wrap items-center gap-2">
-                    <View className="flex-row items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1">
-                      <MessageSquare size={13} color="#4f46e5" />
-                      <Text className="text-xs text-slate-500">
-                        <Text className="text-slate-900" style={{ fontFamily: FUENTE.medium }}>
+                    <View className="flex-row items-center gap-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1">
+                      <MessageSquare size={13} color={colores.primario} />
+                      <Text className="text-xs text-slate-500 dark:text-slate-400">
+                        <Text className="text-slate-900 dark:text-slate-100" style={{ fontFamily: FUENTE.medium }}>
                           {resultado.total_mensajes.toLocaleString()}
                         </Text>{' '}
                         mensajes
                       </Text>
                     </View>
 
-                    <View className="flex-row items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1">
-                      <Calendar size={13} color="#4f46e5" />
+                    <View className="flex-row items-center gap-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1">
+                      <Calendar size={13} color={colores.primario} />
                       {resultado.rango_fechas ? (
-                        <Text className="text-xs text-slate-500">
-                          <Text className="text-slate-900" style={{ fontFamily: FUENTE.medium }}>
+                        <Text className="text-xs text-slate-500 dark:text-slate-400">
+                          <Text className="text-slate-900 dark:text-slate-100" style={{ fontFamily: FUENTE.medium }}>
                             {formatearFecha(resultado.rango_fechas.desde)}
                           </Text>
                           <Text className="opacity-50"> — </Text>
-                          <Text className="text-slate-900" style={{ fontFamily: FUENTE.medium }}>
+                          <Text className="text-slate-900 dark:text-slate-100" style={{ fontFamily: FUENTE.medium }}>
                             {formatearFecha(resultado.rango_fechas.hasta)}
                           </Text>
                         </Text>
                       ) : (
-                        <Text className="text-xs text-slate-500">
+                        <Text className="text-xs text-slate-500 dark:text-slate-400">
                           Sin fechas: partición por bloques
                         </Text>
                       )}
                     </View>
 
-                    <View className="flex-row items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1">
-                      <Layers size={13} color="#4f46e5" />
-                      <Text className="text-xs text-slate-500">
+                    <View className="flex-row items-center gap-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1">
+                      <Layers size={13} color={colores.primario} />
+                      <Text className="text-xs text-slate-500 dark:text-slate-400">
                         Partición{' '}
-                        <Text className="text-slate-900" style={{ fontFamily: FUENTE.medium }}>
+                        <Text className="text-slate-900 dark:text-slate-100" style={{ fontFamily: FUENTE.medium }}>
                           {capitalizar(resultado.granularidad)}
                         </Text>
                       </Text>
@@ -466,26 +469,26 @@ export default function Sentimientos() {
 
                 <Pressable
                   onPress={handleReset}
-                  className="flex-row items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2"
+                  className="flex-row items-center justify-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2"
                 >
-                  <Settings2 size={14} color="#0f172a" />
-                  <Text className="text-xs text-slate-900">Cambiar participante</Text>
+                  <Settings2 size={14} color={colores.texto} />
+                  <Text className="text-xs text-slate-900 dark:text-slate-100">Cambiar participante</Text>
                 </Pressable>
               </View>
 
               <View className="gap-4 px-1 py-5">
                 <View className="px-3">
-                  <Text className="text-xs text-slate-500" style={{ fontFamily: FUENTE.medium }}>
+                  <Text className="text-xs text-slate-500 dark:text-slate-400" style={{ fontFamily: FUENTE.medium }}>
                     {resultado.rango_fechas ? 'Línea de tiempo horizontal' : 'Particiones por bloques'}
                   </Text>
                   {resultado.periodos.length > 1 && (
-                    <Text className="mt-1 text-[11px] text-slate-500">
+                    <Text className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                       Deslizá horizontalmente para avanzar →
                     </Text>
                   )}
                 </View>
 
-                <View className="rounded-lg border border-slate-200 bg-slate-50/50">
+                <View className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
                   <EvolutionTimeline
                     items={resultado.periodos.map((p) => ({
                       key: p.etiqueta,
@@ -495,15 +498,15 @@ export default function Sentimientos() {
                 </View>
 
                 <View className="flex-row items-center justify-between gap-3 px-3">
-                  <View className="rounded-full border border-slate-200 bg-slate-100/60 px-3 py-1.5">
-                    <Text className="text-xs text-slate-500">
+                  <View className="rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100/60 dark:bg-slate-800/60 px-3 py-1.5">
+                    <Text className="text-xs text-slate-500 dark:text-slate-400">
                       {resultado.periodos.length}{' '}
                       {resultado.periodos.length === 1 ? 'período analizado' : 'períodos analizados'}
                     </Text>
                   </View>
                   {resultado.periodos.length > 1 && (
-                    <View className="rounded-full border border-slate-200 bg-slate-100/60 px-3 py-1.5">
-                      <Text className="text-xs text-slate-600" style={{ fontFamily: FUENTE.medium }}>
+                    <View className="rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100/60 dark:bg-slate-800/60 px-3 py-1.5">
+                      <Text className="text-xs text-slate-600 dark:text-slate-400" style={{ fontFamily: FUENTE.medium }}>
                         ← desplazate →
                       </Text>
                     </View>

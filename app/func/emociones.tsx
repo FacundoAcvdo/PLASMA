@@ -14,6 +14,7 @@ import {
   EmotionDistributionList,
 } from '@/components/emotion-charts';
 import type { EmotionsResponse, MetricaClase } from '@/lib/emotions/types';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/emotions-view.tsx:
 // mismo flujo (adopt/start/getResults) y mismo contenido/selectores.
@@ -53,15 +54,16 @@ function Chip({ children, relleno }: { children: ReactNode; relleno?: boolean })
   return (
     <View
       className={`rounded-md border px-2 py-0.5 ${
-        relleno ? 'border-transparent bg-slate-100' : 'border-slate-200 bg-white'
+        relleno ? 'border-transparent bg-slate-100 dark:bg-slate-800' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
       }`}
     >
-      <Text className="text-[11px] text-slate-600">{children}</Text>
+      <Text className="text-[11px] text-slate-600 dark:text-slate-400">{children}</Text>
     </View>
   );
 }
 
 export default function Emociones() {
+  const { colores } = useTema();
   const router = useRouter();
   const [estado, setEstado] = useState<Estado>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -155,7 +157,7 @@ export default function Emociones() {
     return (
       <Screen>
         <Titulo>Emociones</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Seleccioná un dataset para analizar sus emociones.
         </Text>
         <Boton titulo="Elegir dataset" onPress={() => router.push('/datasets')} />
@@ -167,19 +169,19 @@ export default function Emociones() {
     return (
       <Screen>
         <Titulo>Emociones</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Emociones predominantes del dataset: {datasetSeleccionado}
         </Text>
-        <View className="items-center rounded-xl border border-slate-200 bg-white px-6 py-14">
-          <View className="size-14 items-center justify-center rounded-2xl bg-indigo-50">
+        <View className="items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-14">
+          <View className="size-14 items-center justify-center rounded-2xl bg-primario-50 dark:bg-primario-950">
             {estado === 'running' ? (
-              <ActivityIndicator size="large" color="#4f46e5" />
+              <ActivityIndicator size="large" color={colores.primario} />
             ) : (
-              <HeartCrack size={24} color="#4f46e5" />
+              <HeartCrack size={24} color={colores.primario} />
             )}
           </View>
           <Text
-            className="mt-4 text-center text-sm text-slate-900"
+            className="mt-4 text-center text-sm text-slate-900 dark:text-slate-100"
             style={{ fontFamily: 'Inter_500Medium' }}
           >
             {error ??
@@ -187,7 +189,7 @@ export default function Emociones() {
                 ? 'Esperando resultados…'
                 : 'Esta operación no se ejecuta automáticamente')}
           </Text>
-          <Text className="mt-1 max-w-md text-center text-sm text-slate-500">
+          <Text className="mt-1 max-w-md text-center text-sm text-slate-500 dark:text-slate-400">
             {error
               ? 'Revisá la conexión y volvé a detectar las emociones.'
               : estado === 'running'
@@ -215,25 +217,25 @@ export default function Emociones() {
           <View className="flex-row items-center justify-between gap-3">
             <View className="flex-row items-center gap-2">
               <View className="size-2 rounded-full bg-emerald-500" />
-              <Text className="text-sm text-slate-500">Análisis completado</Text>
+              <Text className="text-sm text-slate-500 dark:text-slate-400">Análisis completado</Text>
             </View>
             <TouchableOpacity
               onPress={ejecutarEmotions}
-              className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2"
+              className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2"
             >
-              <RotateCw size={14} color="#0f172a" />
-              <Text className="text-sm text-slate-900">Volver a ejecutar</Text>
+              <RotateCw size={14} color={colores.texto} />
+              <Text className="text-sm text-slate-900 dark:text-slate-100">Volver a ejecutar</Text>
             </TouchableOpacity>
           </View>
 
           {/* CORPUS */}
-          <View className="rounded-xl border border-slate-200 bg-white">
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <View className="gap-2 px-4 pb-1 pt-4">
               <View>
-                <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: '#0f172a' }}>
+                <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: colores.texto }}>
                   Emociones — corpus
                 </Text>
-                <Text className="mt-0.5 text-xs text-slate-500">
+                <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                   6 emociones · modelos ES + EN según idioma
                 </Text>
               </View>
@@ -257,7 +259,7 @@ export default function Emociones() {
             </View>
             <View className="px-4 pb-4 pt-2">
               {!data ? (
-                <Text className="py-4 text-center text-sm text-slate-500">Sin datos</Text>
+                <Text className="py-4 text-center text-sm text-slate-500 dark:text-slate-400">Sin datos</Text>
               ) : vistaCorpus === 'mean' ? (
                 <EmotionCorpusMeanBars corpusStats={data.corpus_stats} />
               ) : vistaCorpus === 'distribution' ? (
@@ -269,13 +271,13 @@ export default function Emociones() {
           </View>
 
           {/* CLASES */}
-          <View className="rounded-xl border border-slate-200 bg-white">
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <View className="gap-2 px-4 pb-1 pt-4">
               <View>
-                <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: '#0f172a' }}>
+                <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: colores.texto }}>
                   Emociones por clase
                 </Text>
-                <Text className="mt-0.5 text-xs text-slate-500">
+                <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                   Comparativa entre clases del dataset
                 </Text>
               </View>
@@ -290,7 +292,7 @@ export default function Emociones() {
             </View>
             <View className="px-4 pb-4 pt-2">
               {!data ? (
-                <Text className="py-4 text-center text-sm text-slate-500">Sin datos</Text>
+                <Text className="py-4 text-center text-sm text-slate-500 dark:text-slate-400">Sin datos</Text>
               ) : (
                 <EmotionClassHeatmap
                   classStats={data.class_stats}

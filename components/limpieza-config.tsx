@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { Check, Hash, Languages, Smile } from 'lucide-react-native';
 import { Selector } from '@/components/Selector';
 import { toast } from '@/lib/toast';
+import { useTema } from '@/context/tema-context';
 import type {
   CleaningConfig,
   CleaningLanguage,
@@ -131,17 +132,18 @@ function Tarjeta({
   icono?: ReactNode;
   children: ReactNode;
 }) {
+  const { colores } = useTema();
   return (
-    <View className="rounded-xl border border-slate-200 bg-white p-4">
+    <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
       <View className="mb-3">
         <View className="flex-row items-center gap-2">
           {icono}
-          <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 15, color: '#0f172a' }}>
+          <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 15, color: colores.texto }}>
             {titulo}
           </Text>
         </View>
         {descripcion ? (
-          <Text className="mt-1 text-xs leading-relaxed text-slate-500">{descripcion}</Text>
+          <Text className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{descripcion}</Text>
         ) : null}
       </View>
       {children}
@@ -153,7 +155,7 @@ function Casilla({ activa }: { activa: boolean }) {
   return (
     <View
       className={`mt-0.5 size-5 items-center justify-center rounded border ${
-        activa ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300 bg-white'
+        activa ? 'border-primario bg-primario dark:bg-primario-500' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900'
       }`}
     >
       {activa ? <Check size={13} color="#fff" /> : null}
@@ -174,23 +176,24 @@ function TarjetaOperacion({
   icono?: ReactNode;
   onPress: () => void;
 }) {
+  const { colores } = useTema();
   return (
     <Pressable
       onPress={onPress}
       className={`flex-row items-start gap-3 rounded-xl border p-4 ${
-        seleccionada ? 'border-indigo-600 bg-indigo-50' : 'border-slate-200 bg-white'
+        seleccionada ? 'border-primario bg-primario-50 dark:bg-primario-950' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
       }`}
     >
       <Casilla activa={seleccionada} />
       <View className="min-w-0 flex-1">
         <View className="flex-row items-center gap-2">
           {icono}
-          <Text style={{ fontFamily: 'Inter_500Medium' }} className="text-sm text-slate-900">
+          <Text style={{ fontFamily: 'Inter_500Medium' }} className="text-sm text-slate-900 dark:text-slate-100">
             {etiqueta}
           </Text>
-          {seleccionada ? <Check size={16} color="#4f46e5" /> : null}
+          {seleccionada ? <Check size={16} color={colores.primario} /> : null}
         </View>
-        <Text className="mt-1 text-xs leading-relaxed text-slate-500">{descripcion}</Text>
+        <Text className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{descripcion}</Text>
       </View>
     </Pressable>
   );
@@ -207,25 +210,27 @@ function TarjetaOpcion({
   descripcion: string;
   onPress: () => void;
 }) {
+  const { colores } = useTema();
   return (
     <Pressable
       onPress={onPress}
       className={`rounded-xl border p-3 ${
-        seleccionada ? 'border-indigo-600 bg-indigo-50' : 'border-slate-200 bg-white'
+        seleccionada ? 'border-primario bg-primario-50 dark:bg-primario-950' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
       }`}
     >
       <View className="flex-row items-center justify-between gap-2">
-        <Text style={{ fontFamily: 'Inter_500Medium' }} className="text-sm text-slate-900">
+        <Text style={{ fontFamily: 'Inter_500Medium' }} className="text-sm text-slate-900 dark:text-slate-100">
           {etiqueta}
         </Text>
-        {seleccionada ? <Check size={16} color="#4f46e5" /> : null}
+        {seleccionada ? <Check size={16} color={colores.primario} /> : null}
       </View>
-      <Text className="mt-1 text-xs leading-relaxed text-slate-500">{descripcion}</Text>
+      <Text className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{descripcion}</Text>
     </Pressable>
   );
 }
 
 export function LimpiezaConfig({ config, onChange }: LimpiezaConfigProps) {
+  const { colores } = useTema();
   const hasEmojis = config.operations.includes('handle_emojis');
   const hasHashtags = config.operations.includes('handle_hashtags');
 
@@ -291,7 +296,7 @@ export function LimpiezaConfig({ config, onChange }: LimpiezaConfigProps) {
             seleccionada={hasEmojis}
             etiqueta="Gestionar emojis"
             descripcion="Define qué hacer con los emojis del texto."
-            icono={<Smile size={16} color="#64748b" />}
+            icono={<Smile size={16} color={colores.textoSuave} />}
             onPress={() => toggleOperation('handle_emojis')}
           />
 
@@ -299,7 +304,7 @@ export function LimpiezaConfig({ config, onChange }: LimpiezaConfigProps) {
             seleccionada={hasHashtags}
             etiqueta="Gestionar hashtags"
             descripcion="Define cómo tratar hashtags como #depresion."
-            icono={<Hash size={16} color="#64748b" />}
+            icono={<Hash size={16} color={colores.textoSuave} />}
             onPress={() => toggleOperation('handle_hashtags')}
           />
         </View>
@@ -308,7 +313,7 @@ export function LimpiezaConfig({ config, onChange }: LimpiezaConfigProps) {
       {hasEmojis && (
         <Tarjeta
           titulo="Tratamiento de emojis"
-          icono={<Smile size={18} color="#0f172a" />}
+          icono={<Smile size={18} color={colores.texto} />}
           descripcion="Los emojis pueden contener información emocional relevante, por lo que su eliminación es opcional."
         >
           <View className="gap-3">
@@ -328,7 +333,7 @@ export function LimpiezaConfig({ config, onChange }: LimpiezaConfigProps) {
       {hasHashtags && (
         <Tarjeta
           titulo="Tratamiento de hashtags"
-          icono={<Hash size={18} color="#0f172a" />}
+          icono={<Hash size={18} color={colores.texto} />}
           descripcion="Los hashtags pueden conservar información temática útil para el análisis."
         >
           <View className="gap-3">
@@ -348,7 +353,7 @@ export function LimpiezaConfig({ config, onChange }: LimpiezaConfigProps) {
       {hasLanguageDependentOperation && (
         <Tarjeta
           titulo="Idioma para lematización / truncado"
-          icono={<Languages size={18} color="#0f172a" />}
+          icono={<Languages size={18} color={colores.texto} />}
           descripcion="La lematización y el truncado necesitan conocer el idioma del dataset."
         >
           <Selector

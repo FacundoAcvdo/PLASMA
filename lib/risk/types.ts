@@ -46,7 +46,7 @@ export const NIVELES: Nivel[] = ['nulo', 'bajo', 'medio', 'potencial', 'alto'];
 export const NIVEL_META: Record<Nivel, { color: string; fondo: string; texto: string }> = {
   nulo: { color: '#10b981', fondo: '#d1fae5', texto: '#047857' },
   bajo: { color: '#38bdf8', fondo: '#e0f2fe', texto: '#0369a1' },
-  medio: { color: '#f59e0b', fondo: '#fef3c7', texto: '#b45309' },
+  medio: { color: '#f5f10b', fondo: '#fef3c7', texto: '#a19f2b' },
   potencial: { color: '#fb923c', fondo: '#ffedd5', texto: '#c2410c' },
   alto: { color: '#ef4444', fondo: '#fee2e2', texto: '#b91c1c' },
 };

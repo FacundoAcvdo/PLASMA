@@ -12,6 +12,7 @@ import {
   Users,
 } from 'lucide-react-native';
 import type { CleaningResult } from '@/lib/limpieza/types';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/lib/data-cleaning/cleaning-results.tsx.
 // Mismas tarjetas, métricas y textos; grid de web adaptado a 2 columnas en móvil.
@@ -20,13 +21,13 @@ const num = (v: number) => v.toLocaleString();
 
 function StatCard({ label, value, icono }: { label: string; value: number; icono: ReactNode }) {
   return (
-    <View className="w-[48%] flex-row items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
-      <View className="size-10 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+    <View className="w-[48%] flex-row items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+      <View className="size-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
         {icono}
       </View>
       <View className="min-w-0 flex-1">
-        <Text className="text-xs text-slate-500">{label}</Text>
-        <Text style={{ fontFamily: 'Inter_600SemiBold' }} className="mt-0.5 text-lg text-slate-900">
+        <Text className="text-xs text-slate-500 dark:text-slate-400">{label}</Text>
+        <Text style={{ fontFamily: 'Inter_600SemiBold' }} className="mt-0.5 text-lg text-slate-900 dark:text-slate-100">
           {num(value)}
         </Text>
       </View>
@@ -36,9 +37,9 @@ function StatCard({ label, value, icono }: { label: string; value: number; icono
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <View className="rounded-xl border border-slate-200 bg-white p-4">
-      <Text className="text-xs text-slate-500">{label}</Text>
-      <Text style={{ fontFamily: 'Inter_600SemiBold' }} className="mt-1 text-base text-slate-900">
+    <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+      <Text className="text-xs text-slate-500 dark:text-slate-400">{label}</Text>
+      <Text style={{ fontFamily: 'Inter_600SemiBold' }} className="mt-1 text-base text-slate-900 dark:text-slate-100">
         {num(value)}
       </Text>
     </View>
@@ -46,18 +47,20 @@ function Metric({ label, value }: { label: string; value: number }) {
 }
 
 function IconoDoble() {
+  const { colores } = useTema();
   return (
     <View className="items-center justify-center">
-      <Text style={{ fontFamily: 'Inter_700Bold', fontSize: 13, color: '#0f172a' }}>2×</Text>
+      <Text style={{ fontFamily: 'Inter_700Bold', fontSize: 13, color: colores.texto }}>2×</Text>
     </View>
   );
 }
 
 function TarjetaTitulo({ titulo, children }: { titulo: string; children: ReactNode }) {
+  const { colores } = useTema();
   return (
-    <View className="rounded-xl border border-slate-200 bg-white">
-      <View className="border-b border-slate-100 px-4 py-3">
-        <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 15, color: '#0f172a' }}>
+    <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <View className="border-b border-slate-100 dark:border-slate-800 px-4 py-3">
+        <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 15, color: colores.texto }}>
           {titulo}
         </Text>
       </View>
@@ -73,20 +76,21 @@ export function LimpiezaResultado({
   result: CleaningResult;
   onDownload: () => void;
 }) {
+  const { colores } = useTema();
   const { stats } = result;
 
   return (
     <View className="gap-4">
       {/* Header */}
-      <View className="flex-row items-center gap-4 rounded-xl border border-slate-200 bg-white p-5">
-        <View className="size-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50">
-          <CheckCircle2 size={24} color="#4f46e5" />
+      <View className="flex-row items-center gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <View className="size-12 shrink-0 items-center justify-center rounded-xl bg-primario-50 dark:bg-primario-950">
+          <CheckCircle2 size={24} color={colores.primario} />
         </View>
         <View className="min-w-0 flex-1">
-          <Text style={{ fontFamily: 'Inter_600SemiBold' }} className="text-base text-slate-900">
+          <Text style={{ fontFamily: 'Inter_600SemiBold' }} className="text-base text-slate-900 dark:text-slate-100">
             Limpieza completada
           </Text>
-          <Text className="mt-0.5 text-sm text-slate-500" numberOfLines={1}>
+          <Text className="mt-0.5 text-sm text-slate-500 dark:text-slate-400" numberOfLines={1}>
             {result.filename}
           </Text>
         </View>
@@ -94,7 +98,7 @@ export function LimpiezaResultado({
 
       <Pressable
         onPress={onDownload}
-        className="flex-row items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3.5"
+        className="flex-row items-center justify-center gap-2 rounded-xl bg-primario dark:bg-primario-500 px-4 py-3.5"
       >
         <FileDown size={18} color="#fff" />
         <Text style={{ fontFamily: 'Inter_600SemiBold' }} className="text-base text-white">
@@ -104,22 +108,22 @@ export function LimpiezaResultado({
 
       {/* Resumen */}
       <View className="flex-row flex-wrap gap-3">
-        <StatCard label="Filas originales" value={stats.original_rows} icono={<FileText size={18} color="#334155" />} />
-        <StatCard label="Filas finales" value={stats.cleaned_rows} icono={<CheckCircle2 size={18} color="#334155" />} />
-        <StatCard label="Tokens originales" value={stats.original_tokens} icono={<BarChart3 size={18} color="#334155" />} />
-        <StatCard label="Tokens finales" value={stats.cleaned_tokens} icono={<BarChart3 size={18} color="#334155" />} />
+        <StatCard label="Filas originales" value={stats.original_rows} icono={<FileText size={18} color={colores.textoMedio} />} />
+        <StatCard label="Filas finales" value={stats.cleaned_rows} icono={<CheckCircle2 size={18} color={colores.textoMedio} />} />
+        <StatCard label="Tokens originales" value={stats.original_tokens} icono={<BarChart3 size={18} color={colores.textoMedio} />} />
+        <StatCard label="Tokens finales" value={stats.cleaned_tokens} icono={<BarChart3 size={18} color={colores.textoMedio} />} />
       </View>
 
       {/* Procesamiento */}
       <TarjetaTitulo titulo="Procesamiento realizado">
         <View className="flex-row flex-wrap gap-3">
           <StatCard label="Duplicados eliminados" value={stats.removed_duplicates} icono={<IconoDoble />} />
-          <StatCard label="URLs eliminadas" value={stats.removed_urls} icono={<Link2 size={18} color="#334155" />} />
-          <StatCard label="Menciones eliminadas" value={stats.removed_mentions} icono={<MessageCircle size={18} color="#334155" />} />
-          <StatCard label="Emojis procesados" value={stats.emojis_processed} icono={<Smile size={18} color="#334155" />} />
-          <StatCard label="Hashtags procesados" value={stats.hashtags_processed} icono={<Hash size={18} color="#334155" />} />
-          <StatCard label="Entidades anonimizadas" value={stats.entities_anonymized} icono={<Users size={18} color="#334155" />} />
-          <StatCard label="Stopwords eliminadas" value={stats.stopwords_removed} icono={<MessageCircle size={18} color="#334155" />} />
+          <StatCard label="URLs eliminadas" value={stats.removed_urls} icono={<Link2 size={18} color={colores.textoMedio} />} />
+          <StatCard label="Menciones eliminadas" value={stats.removed_mentions} icono={<MessageCircle size={18} color={colores.textoMedio} />} />
+          <StatCard label="Emojis procesados" value={stats.emojis_processed} icono={<Smile size={18} color={colores.textoMedio} />} />
+          <StatCard label="Hashtags procesados" value={stats.hashtags_processed} icono={<Hash size={18} color={colores.textoMedio} />} />
+          <StatCard label="Entidades anonimizadas" value={stats.entities_anonymized} icono={<Users size={18} color={colores.textoMedio} />} />
+          <StatCard label="Stopwords eliminadas" value={stats.stopwords_removed} icono={<MessageCircle size={18} color={colores.textoMedio} />} />
         </View>
       </TarjetaTitulo>
 
@@ -156,34 +160,34 @@ export function LimpiezaResultado({
       {/* Preview */}
       <TarjetaTitulo titulo="Vista previa de cambios">
         {result.previews.length === 0 ? (
-          <View className="rounded-lg border border-dashed border-slate-300 p-6">
-            <Text style={{ fontFamily: 'Inter_500Medium' }} className="text-center text-sm text-slate-900">
+          <View className="rounded-lg border border-dashed border-slate-300 dark:border-slate-700 p-6">
+            <Text style={{ fontFamily: 'Inter_500Medium' }} className="text-center text-sm text-slate-900 dark:text-slate-100">
               No hay cambios de texto para mostrar.
             </Text>
-            <Text className="mt-1 text-center text-xs text-slate-500">
+            <Text className="mt-1 text-center text-xs text-slate-500 dark:text-slate-400">
               Las operaciones seleccionadas no modificaron el contenido de los documentos mostrados.
             </Text>
           </View>
         ) : (
           <View className="gap-4">
             {result.previews.map((preview, index) => (
-              <View key={index} className="overflow-hidden rounded-xl border border-slate-200">
-                <View className="border-b border-slate-100 bg-slate-50 px-4 py-2">
-                  <Text className="text-xs text-slate-500">Documento {index + 1}</Text>
+              <View key={index} className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
+                <View className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-2">
+                  <Text className="text-xs text-slate-500 dark:text-slate-400">Documento {index + 1}</Text>
                 </View>
-                <View className="border-b border-slate-100 p-4">
-                  <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <View className="border-b border-slate-100 dark:border-slate-800 p-4">
+                  <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                     Original
                   </Text>
-                  <Text className="text-sm leading-relaxed text-slate-700">
+                  <Text className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                     {preview.original}
                   </Text>
                 </View>
                 <View className="p-4">
-                  <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                     Limpio
                   </Text>
-                  <Text className="text-sm leading-relaxed text-slate-700">
+                  <Text className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
                     {preview.cleaned}
                   </Text>
                 </View>

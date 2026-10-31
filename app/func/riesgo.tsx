@@ -15,6 +15,7 @@ import {
   type Nivel,
   type RiskResponse,
 } from '@/lib/risk/types';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/risk-view.tsx: mismo flujo
 // (adopt/start/getResults), estadísticas, donut, desglose y textos relevantes.
@@ -37,21 +38,23 @@ function StatCard({
   detalle: string;
   color?: string;
 }) {
+  const { colores } = useTema();
   return (
-    <View className="w-[48%] rounded-xl border border-slate-200 bg-white p-3.5">
-      <Text className="text-xs text-slate-500">{titulo}</Text>
+    <View className="w-[48%] rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3.5">
+      <Text className="text-xs text-slate-500 dark:text-slate-400">{titulo}</Text>
       <Text
         className="mt-0.5"
-        style={{ fontFamily: FUENTE.semibold, fontSize: 24, color: color ?? '#0f172a' }}
+        style={{ fontFamily: FUENTE.semibold, fontSize: 24, color: color ?? colores.texto }}
       >
         {valor}
       </Text>
-      <Text className="mt-0.5 text-[11px] text-slate-500">{detalle}</Text>
+      <Text className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">{detalle}</Text>
     </View>
   );
 }
 
 export default function NivelRiesgo() {
+  const { colores } = useTema();
   const router = useRouter();
   const { datasetSeleccionado } = useDataset();
   const { tasks, startTask, adoptTask, consumeTask } = useJobs();
@@ -157,7 +160,7 @@ export default function NivelRiesgo() {
     return (
       <Screen>
         <Titulo>Nivel de riesgo</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Seleccioná un dataset para estimar su nivel de riesgo.
         </Text>
         <Boton titulo="Elegir dataset" onPress={() => router.push('/datasets')} />
@@ -169,27 +172,27 @@ export default function NivelRiesgo() {
     return (
       <Screen>
         <Titulo>Nivel de riesgo</Titulo>
-        <Text className="mb-4 mt-1 text-sm text-slate-500">
+        <Text className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
           Nivel de riesgo del dataset: {datasetSeleccionado}
         </Text>
         <CajaError mensaje={errorMensaje} />
-        <View className="items-center rounded-xl border border-slate-200 bg-white px-6 py-14">
-          <View className="size-14 items-center justify-center rounded-2xl bg-indigo-50">
+        <View className="items-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-14">
+          <View className="size-14 items-center justify-center rounded-2xl bg-primario-50 dark:bg-primario-950">
             {estado === 'running' ? (
-              <ActivityIndicator size="large" color="#4f46e5" />
+              <ActivityIndicator size="large" color={colores.primario} />
             ) : (
-              <Gauge size={24} color="#4f46e5" />
+              <Gauge size={24} color={colores.primario} />
             )}
           </View>
           <Text
-            className="mt-4 text-center text-sm text-slate-900"
+            className="mt-4 text-center text-sm text-slate-900 dark:text-slate-100"
             style={{ fontFamily: FUENTE.medium }}
           >
             {estado === 'running'
               ? 'Esperando resultados…'
               : 'Esta operación no se ejecuta automáticamente'}
           </Text>
-          <Text className="mt-1 max-w-md text-center text-sm text-slate-500">
+          <Text className="mt-1 max-w-md text-center text-sm text-slate-500 dark:text-slate-400">
             {estado === 'running'
               ? 'Podés navegar a otra pantalla: te avisaremos con una notificación cuando termine.'
               : IDLE_HINT}
@@ -215,28 +218,28 @@ export default function NivelRiesgo() {
           <View className="flex-row items-center justify-between gap-3">
             <View className="flex-row items-center gap-2">
               <View className="size-2 rounded-full bg-emerald-500" />
-              <Text className="text-sm text-slate-500">Análisis completado</Text>
+              <Text className="text-sm text-slate-500 dark:text-slate-400">Análisis completado</Text>
             </View>
             <TouchableOpacity
               onPress={ejecutarRiesgo}
-              className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2"
+              className="flex-row items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2"
             >
-              <RotateCw size={14} color="#0f172a" />
-              <Text className="text-sm text-slate-900">Volver a ejecutar</Text>
+              <RotateCw size={14} color={colores.texto} />
+              <Text className="text-sm text-slate-900 dark:text-slate-100">Volver a ejecutar</Text>
             </TouchableOpacity>
           </View>
 
           {data.disclaimer ? (
-            <View className="flex-row items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
-              <TriangleAlert size={16} color="#b45309" />
+            <View className="flex-row items-start gap-2.5 rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950 px-4 py-3">
+              <TriangleAlert size={16} color={colores.advertencia} />
               <View className="flex-1">
                 <Text
-                  className="text-sm text-amber-900"
+                  className="text-sm text-amber-900 dark:text-amber-200"
                   style={{ fontFamily: FUENTE.semibold }}
                 >
                   Aviso: modelo de IA experimental
                 </Text>
-                <Text className="mt-0.5 text-xs text-amber-800">{data.disclaimer}</Text>
+                <Text className="mt-0.5 text-xs text-amber-800 dark:text-amber-200">{data.disclaimer}</Text>
               </View>
             </View>
           ) : null}
@@ -247,7 +250,7 @@ export default function NivelRiesgo() {
                 titulo="Alto + potencial"
                 valor={`${resumen.pct_alto_potencial}%`}
                 detalle="Requieren revisión por personal cualificado"
-                color="#dc2626"
+                color={colores.error}
               />
               <StatCard
                 titulo="Documentos analizados"
@@ -268,12 +271,12 @@ export default function NivelRiesgo() {
           ) : null}
 
           {/* Distribución */}
-          <View className="rounded-xl border border-slate-200 bg-white">
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <View className="px-4 pb-1 pt-4">
-              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                 Distribución por nivel de riesgo
               </Text>
-              <Text className="mt-0.5 text-xs text-slate-500">
+              <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                 Alto, potencial, medio, bajo y nulo
               </Text>
             </View>
@@ -283,12 +286,12 @@ export default function NivelRiesgo() {
           </View>
 
           {/* Desglose */}
-          <View className="rounded-xl border border-slate-200 bg-white">
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <View className="px-4 pb-1 pt-4">
-              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: '#0f172a' }}>
+              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 16, color: colores.texto }}>
                 Desglose
               </Text>
-              <Text className="mt-0.5 text-xs text-slate-500">Conteo y porcentaje por nivel</Text>
+              <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Conteo y porcentaje por nivel</Text>
             </View>
             <View className="gap-3 px-4 py-4">
               {donut.map((n) => (
@@ -301,11 +304,11 @@ export default function NivelRiesgo() {
                       />
                       <NivelBadge nivel={n.nivel} />
                     </View>
-                    <Text className="text-sm text-slate-500">
+                    <Text className="text-sm text-slate-500 dark:text-slate-400">
                       {n.valor} ({n.pct}%)
                     </Text>
                   </View>
-                  <View className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                  <View className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                     <View
                       className="h-full rounded-full"
                       style={{ width: `${n.pct}%`, backgroundColor: n.color }}
@@ -317,24 +320,24 @@ export default function NivelRiesgo() {
           </View>
 
           {/* Textos más relevantes */}
-          <View className="rounded-xl border border-slate-200 bg-white">
-            <View className="gap-3 border-b border-slate-100 px-4 py-4">
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+            <View className="gap-3 border-b border-slate-100 dark:border-slate-800 px-4 py-4">
               <View className="flex-row items-center gap-2">
                 <Text
-                  className="text-sm text-slate-900"
+                  className="text-sm text-slate-900 dark:text-slate-100"
                   style={{ fontFamily: FUENTE.semibold }}
                 >
                   Textos más relevantes
                 </Text>
                 {data.fuente ? (
-                  <View className="rounded-md bg-slate-100 px-2 py-0.5">
-                    <Text className="text-[11px] text-slate-600">
+                  <View className="rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5">
+                    <Text className="text-[11px] text-slate-600 dark:text-slate-400">
                       {data.fuente === 'chat' ? 'Chat' : 'Mensajes'}
                     </Text>
                   </View>
                 ) : null}
               </View>
-              <Text className="text-xs text-slate-500">
+              <Text className="text-xs text-slate-500 dark:text-slate-400">
                 {data.fuente === 'chat'
                   ? 'Chunks de conversación con los mensajes de riesgo resaltados'
                   : 'Casos de mayor riesgo con la evidencia resaltada'}
@@ -353,25 +356,25 @@ export default function NivelRiesgo() {
 
             <View className="gap-3 px-4 py-4">
               {items.length === 0 ? (
-                <Text className="py-2 text-sm text-slate-500">Sin casos para este filtro.</Text>
+                <Text className="py-2 text-sm text-slate-500 dark:text-slate-400">Sin casos para este filtro.</Text>
               ) : (
                 items.slice(0, 50).map((it) => (
                   <View
                     key={it.doc_id}
-                    className="gap-2 rounded-lg border border-slate-200 bg-slate-50/40 p-3"
+                    className="gap-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-800/30 p-3"
                   >
                     {it.chunk_index != null && (
                       <View className="flex-row flex-wrap items-center gap-1.5">
-                        <View className="rounded-md bg-slate-200 px-1.5 py-0.5">
-                          <Text className="text-[10px] text-slate-600">
+                        <View className="rounded-md bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5">
+                          <Text className="text-[10px] text-slate-600 dark:text-slate-400">
                             fragmento #{it.chunk_index}
                           </Text>
                         </View>
-                        <Text className="text-[11px] text-slate-500">
+                        <Text className="text-[11px] text-slate-500 dark:text-slate-400">
                           mensajes {it.msg_desde}–{it.msg_hasta}
                         </Text>
                         {(it.fecha_desde || it.fecha_hasta) && (
-                          <Text className="text-[11px] text-slate-500">
+                          <Text className="text-[11px] text-slate-500 dark:text-slate-400">
                             · {it.fecha_desde ?? '?'} → {it.fecha_hasta ?? '?'}
                           </Text>
                         )}
@@ -381,9 +384,9 @@ export default function NivelRiesgo() {
                     {it.mensajes_evidencia?.length ? (
                       <View className="gap-1.5">
                         {it.mensajes_evidencia.map((m) => (
-                          <View key={m.n} className="rounded-md bg-slate-100 p-2">
-                            <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, lineHeight: 21, color: '#0f172a' }}>
-                              <Text style={{ fontFamily: 'monospace', fontSize: 11, color: '#64748b' }}>
+                          <View key={m.n} className="rounded-md bg-slate-100 dark:bg-slate-800 p-2">
+                            <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, lineHeight: 21, color: colores.texto }}>
+                              <Text style={{ fontFamily: 'monospace', fontSize: 11, color: colores.textoSuave }}>
                                 #{m.n}{' '}
                               </Text>
                               <TextoResaltado texto={m.texto} triggers={m.triggers} />
@@ -398,15 +401,15 @@ export default function NivelRiesgo() {
 
                     <View className="flex-row flex-wrap items-center justify-between gap-2">
                       <View className="flex-row items-center gap-3">
-                        <Text className="text-[11px] text-slate-500">
+                        <Text className="text-[11px] text-slate-500 dark:text-slate-400">
                           Puntaje A:{' '}
-                          <Text style={{ fontFamily: 'monospace', color: '#0f172a' }}>
+                          <Text style={{ fontFamily: 'monospace', color: colores.texto }}>
                             {it.score_a.toFixed(3)}
                           </Text>
                         </Text>
-                        <Text className="text-[11px] text-slate-500">
+                        <Text className="text-[11px] text-slate-500 dark:text-slate-400">
                           RoBERTa:{' '}
-                          <Text style={{ fontFamily: 'monospace', color: '#0f172a' }}>
+                          <Text style={{ fontFamily: 'monospace', color: colores.texto }}>
                             {it.score_b != null ? it.score_b.toFixed(3) : '—'}
                           </Text>
                         </Text>

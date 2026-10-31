@@ -139,7 +139,7 @@ export function EmbeddingsScatter({ points, clusters, outliers, total, truncated
   };
 
   if (!points.length) {
-    return <Text className="py-8 text-center text-sm text-slate-500">Sin puntos para mostrar</Text>;
+    return <Text className="py-8 text-center text-sm text-slate-500 dark:text-slate-400">Sin puntos para mostrar</Text>;
   }
 
   const tooltipLeft = sel ? Math.min(Math.max(sel.sx + 10, 4), Math.max(4, ancho - 124)) : 0;
@@ -153,13 +153,13 @@ export function EmbeddingsScatter({ points, clusters, outliers, total, truncated
           onPress={() => setActiveCluster(null)}
           className={`rounded-full border px-2.5 py-1 ${
             activeCluster === null
-              ? 'border-slate-900 bg-slate-900'
-              : 'border-slate-200 bg-white'
+              ? 'border-slate-900 dark:border-slate-100 bg-slate-900 dark:bg-slate-100'
+              : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
           }`}
         >
           <Text
             className={`text-xs font-medium ${
-              activeCluster === null ? 'text-white' : 'text-slate-500'
+              activeCluster === null ? 'text-white dark:text-slate-900' : 'text-slate-500 dark:text-slate-400'
             }`}
           >
             Todos ({total})
@@ -173,17 +173,17 @@ export function EmbeddingsScatter({ points, clusters, outliers, total, truncated
               key={c.id}
               onPress={() => setActiveCluster(activo ? null : c.id)}
               className={`flex-row items-center gap-1.5 rounded-full border px-2.5 py-1 ${
-                activo ? 'border-slate-900 bg-slate-900' : 'border-slate-200 bg-white'
+                activo ? 'border-slate-900 dark:border-slate-100 bg-slate-900 dark:bg-slate-100' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
               }`}
             >
               <View
                 className="size-2 rounded-full"
                 style={{ backgroundColor: colorCluster(c.id, clusterIndex) }}
               />
-              <Text className={`text-xs ${activo ? 'text-white' : 'text-slate-900'}`}>
+              <Text className={`text-xs ${activo ? 'text-white dark:text-slate-900' : 'text-slate-900 dark:text-slate-100'}`}>
                 c{c.id}
               </Text>
-              <Text className={`text-xs ${activo ? 'text-white/70' : 'text-slate-400'}`}>
+              <Text className={`text-xs ${activo ? 'text-white/70 dark:text-slate-900/70' : 'text-slate-400 dark:text-slate-500'}`}>
                 {c.count}
               </Text>
             </Pressable>
@@ -194,12 +194,12 @@ export function EmbeddingsScatter({ points, clusters, outliers, total, truncated
           <Pressable
             onPress={() => setShowOutliers((v) => !v)}
             className={`rounded-full border px-2.5 py-1 ${
-              showOutliers ? 'border-slate-200 bg-white' : 'border-slate-200 bg-slate-100'
+              showOutliers ? 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900' : 'border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800'
             }`}
           >
             <Text
               className={`text-xs ${
-                showOutliers ? 'text-slate-900' : 'text-slate-400 line-through'
+                showOutliers ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500 line-through'
               }`}
             >
               atípicos {outliers}
@@ -212,26 +212,26 @@ export function EmbeddingsScatter({ points, clusters, outliers, total, truncated
       <View className="mb-2 flex-row items-center justify-end gap-1.5">
         <Pressable
           onPress={() => setZoom((z) => Math.max(ZOOM_MIN, z - PASO_ZOOM))}
-          className="size-7 items-center justify-center rounded-md border border-slate-200 bg-white"
+          className="size-7 items-center justify-center rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
         >
-          <Text className="text-sm text-slate-900">−</Text>
+          <Text className="text-sm text-slate-900 dark:text-slate-100">−</Text>
         </Pressable>
-        <Text className="w-10 text-center font-mono text-xs text-slate-500">
+        <Text className="w-10 text-center font-mono text-xs text-slate-500 dark:text-slate-400">
           {Math.round(zoom * 100)}%
         </Text>
         <Pressable
           onPress={() => setZoom((z) => Math.min(ZOOM_MAX, z + PASO_ZOOM))}
-          className="size-7 items-center justify-center rounded-md border border-slate-200 bg-white"
+          className="size-7 items-center justify-center rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
         >
-          <Text className="text-sm text-slate-900">+</Text>
+          <Text className="text-sm text-slate-900 dark:text-slate-100">+</Text>
         </Pressable>
       </View>
 
       {/* área de dibujo */}
-      <View className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-        <View className="bg-slate-50 p-2">
+      <View className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <View className="bg-slate-50 dark:bg-slate-900 p-2">
           <View
-            className="overflow-hidden rounded-lg border border-slate-200 bg-white"
+            className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
             onLayout={(e) => setAncho(e.nativeEvent.layout.width - 2)}
           >
             <Pressable onPress={alTocar} style={{ height: ALTO_PLOT }}>
@@ -252,13 +252,13 @@ export function EmbeddingsScatter({ points, clusters, outliers, total, truncated
             {sel && (
               <View
                 pointerEvents="none"
-                className="absolute rounded-md border border-slate-200 bg-white px-2.5 py-1.5"
+                className="absolute rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1.5"
                 style={{ left: tooltipLeft, top: tooltipTop }}
               >
-                <Text className="text-xs font-medium text-slate-900">
+                <Text className="text-xs font-medium text-slate-900 dark:text-slate-100">
                   {sel.atipico ? 'atípico' : `cluster ${sel.cluster}`}
                 </Text>
-                <Text className="font-mono text-xs text-slate-500">
+                <Text className="font-mono text-xs text-slate-500 dark:text-slate-400">
                   x {sel.x.toFixed(3)} · y {sel.y.toFixed(3)}
                 </Text>
               </View>
@@ -266,15 +266,15 @@ export function EmbeddingsScatter({ points, clusters, outliers, total, truncated
           </View>
         </View>
 
-        <View className="flex-row items-center justify-between border-t border-slate-100 bg-white px-3 py-2">
-          <Text className="text-[11px] text-slate-500">UMAP 2D · coseno · HDBSCAN mín 50 · svg</Text>
-          <Text className="font-mono text-[11px] text-slate-500">
+        <View className="flex-row items-center justify-between border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2">
+          <Text className="text-[11px] text-slate-500 dark:text-slate-400">UMAP 2D · coseno · HDBSCAN mín 50 · svg</Text>
+          <Text className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
             {coords.length} / {total} puntos {truncated ? '· muestreo 8k' : ''}
           </Text>
         </View>
       </View>
 
-      <Text className="mt-2 text-center text-[11px] text-slate-500">
+      <Text className="mt-2 text-center text-[11px] text-slate-500 dark:text-slate-400">
         tocá un punto para ver coordenadas · tocá la leyenda para filtrar · ± zoom
       </Text>
     </View>

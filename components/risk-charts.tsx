@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 import { FUENTE } from '@/components/ui';
+import { useTema } from '@/context/tema-context';
 import {
   NIVEL_META,
   segmentosResaltados,
@@ -21,6 +22,7 @@ export function RiskDonut({
   size?: number;
   grosor?: number;
 }) {
+  const { colores } = useTema();
   const radio = (size - grosor) / 2;
   const circunferencia = 2 * Math.PI * radio;
   const total = datos.reduce((suma, d) => suma + d.valor, 0);
@@ -33,7 +35,7 @@ export function RiskDonut({
           cx={size / 2}
           cy={size / 2}
           r={radio}
-          stroke="#e2e8f0"
+          stroke={colores.borde}
           strokeWidth={grosor}
           fill="none"
         />
@@ -82,16 +84,17 @@ export function TextoResaltado({
   triggers: string[];
   style?: object;
 }) {
+  const { colores } = useTema();
   const segmentos = segmentosResaltados(texto, triggers);
   return (
     <Text
       style={
-        style ?? { fontFamily: FUENTE.regular, fontSize: 14, lineHeight: 21, color: '#0f172a' }
+        style ?? { fontFamily: FUENTE.regular, fontSize: 14, lineHeight: 21, color: colores.texto }
       }
     >
       {segmentos.map((s, i) =>
         s.resaltado ? (
-          <Text key={i} style={{ backgroundColor: '#fee2e2', color: '#b91c1c' }}>
+          <Text key={i} style={{ backgroundColor: colores.errorFondo, color: colores.error }}>
             {s.texto}
           </Text>
         ) : (
@@ -121,8 +124,8 @@ export function EvidenciaResaltada({
       {triggers.length > 0 && (
         <View className="mt-1 flex-row flex-wrap gap-1">
           {triggers.map((t) => (
-            <View key={t} className="rounded border border-slate-300 px-1.5 py-0.5">
-              <Text className="text-[10px] text-slate-600">{t}</Text>
+            <View key={t} className="rounded border border-slate-300 dark:border-slate-700 px-1.5 py-0.5">
+              <Text className="text-[10px] text-slate-600 dark:text-slate-400">{t}</Text>
             </View>
           ))}
         </View>
@@ -131,7 +134,7 @@ export function EvidenciaResaltada({
       {esLargo && (
         <TouchableOpacity onPress={() => setExpandido((v) => !v)} className="mt-1">
           <Text
-            className="text-xs text-indigo-600"
+            className="text-xs text-primario dark:text-primario-400"
             style={{ fontFamily: FUENTE.semibold }}
           >
             {expandido ? 'Ver menos' : 'Ver más'}

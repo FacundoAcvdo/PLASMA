@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Selector } from '@/components/Selector';
+import { useTema } from '@/context/tema-context';
 import {
   COLORES_CLASE,
   COLORES_SERIE,
@@ -13,7 +14,6 @@ import {
 // Gráficos con Views puras (sin react-native-svg): mismo aspecto que la web,
 // sin dependencias nativas. El hover de web es tap-en-barra en mobile.
 
-const GRIS_EJE = '#64748b';
 const ANCHO_EJE_Y = 34;
 const ALTO_EJE_X = 26;
 const PAD_ARR = 8;
@@ -67,6 +67,7 @@ export function BarrasAgrupadas({
   alto?: number;
   barraMax?: number;
 }) {
+  const { colores } = useTema();
   const [ancho, setAncho] = useState(0);
   const [sel, setSel] = useState<number | null>(null);
 
@@ -97,7 +98,7 @@ export function BarrasAgrupadas({
                       top: PAD_ARR + plotH - hDe(t) - 7,
                       right: 4,
                       fontSize: 10,
-                      color: GRIS_EJE,
+                      color: colores.textoSuave,
                     }}
                   >
                     {formatearEje(t)}
@@ -110,7 +111,7 @@ export function BarrasAgrupadas({
                     <View
                       key={t}
                       style={{ position: 'absolute', top: PAD_ARR + plotH - hDe(t) }}
-                      className="h-px w-full bg-slate-200"
+                      className="h-px w-full bg-slate-200 dark:bg-slate-700"
                     />
                   ))}
                 </View>
@@ -148,7 +149,7 @@ export function BarrasAgrupadas({
                 {etiquetas.map((et, i) => (
                   <Text
                     key={i}
-                    style={{ width: grupoW, fontSize: 10, color: GRIS_EJE }}
+                    style={{ width: grupoW, fontSize: 10, color: colores.textoSuave }}
                     className="text-center"
                     numberOfLines={1}
                   >
@@ -161,7 +162,7 @@ export function BarrasAgrupadas({
         )}
       </View>
       {sel !== null && etiquetas[sel] !== undefined && (
-        <Text className="mt-1 text-center text-xs text-slate-500">
+        <Text className="mt-1 text-center text-xs text-slate-500 dark:text-slate-400">
           {etiquetas[sel]} ·{' '}
           {series.map((s) => `${etiquetaSerie(s.clave)}: ${s.valores[sel ?? 0] ?? 0}`).join('  ')}
         </Text>
@@ -173,6 +174,7 @@ export function BarrasAgrupadas({
 /* ---------- boxplot de oraciones ---------- */
 
 export function EdaSentenceBoxPlot({ stats }: { stats: SentenceStats }) {
+  const { colores } = useTema();
   const { min, max, median, q25, q75, mean, std, count } = stats;
   const rango = max - min || 1;
   const aPct = (v: number) => ((v - min) / rango) * 100;
@@ -183,29 +185,29 @@ export function EdaSentenceBoxPlot({ stats }: { stats: SentenceStats }) {
   const meanPct = aPct(mean);
 
   return (
-    <View className="w-full rounded-lg border border-slate-200 bg-white p-4">
+    <View className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
       <View className="mb-2 flex-row items-center justify-between">
         <Text
-          style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: '#64748b' }}
+          style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: colores.textoSuave }}
         >
           Distribución de oraciones por texto (diagrama de caja)
         </Text>
-        <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 12, color: '#64748b' }}>
+        <Text style={{ fontFamily: 'Inter_400Regular', fontSize: 12, color: colores.textoSuave }}>
           n {count}
         </Text>
       </View>
       <View className="relative h-12 w-full">
         <View
           style={{ top: 24, height: 1, marginTop: -0.5 }}
-          className="absolute left-0 right-0 bg-slate-200"
+          className="absolute left-0 right-0 bg-slate-200 dark:bg-slate-700"
         />
         <View
           style={{ top: 12, height: 24, left: `${q25Pct}%`, width: `${Math.max(2, q75Pct - q25Pct)}%` }}
-          className="absolute rounded-[3px] border border-slate-300 bg-slate-100"
+          className="absolute rounded-[3px] border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800"
         />
         <View
           style={{ top: 12, height: 24, width: 2, left: `${medPct}%`, marginLeft: -1 }}
-          className="absolute bg-slate-900"
+          className="absolute bg-slate-900 dark:bg-slate-100"
         />
         <View
           style={{
@@ -214,20 +216,20 @@ export function EdaSentenceBoxPlot({ stats }: { stats: SentenceStats }) {
             width: 8,
             left: `${meanPct}%`,
             transform: [{ translateX: -4 }, { rotate: '45deg' }],
-            borderColor: '#0f172a',
+            borderColor: colores.texto,
           }}
-          className="absolute border bg-white"
+          className="absolute border bg-white dark:bg-slate-900"
         />
       </View>
       <View className="mt-1 flex-row flex-wrap gap-x-3 gap-y-1">
-        <Text style={{ fontSize: 11, color: '#64748b' }}>mín {min}</Text>
-        <Text style={{ fontSize: 11, color: '#64748b' }}>q25 {q25.toFixed(1)}</Text>
-        <Text style={{ fontSize: 11, color: '#0f172a', fontFamily: 'Inter_500Medium' }}>
+        <Text style={{ fontSize: 11, color: colores.textoSuave }}>mín {min}</Text>
+        <Text style={{ fontSize: 11, color: colores.textoSuave }}>q25 {q25.toFixed(1)}</Text>
+        <Text style={{ fontSize: 11, color: colores.texto, fontFamily: 'Inter_500Medium' }}>
           mediana {median}
         </Text>
-        <Text style={{ fontSize: 11, color: '#64748b' }}>q75 {q75.toFixed(1)}</Text>
-        <Text style={{ fontSize: 11, color: '#64748b' }}>máx {max}</Text>
-        <Text style={{ fontSize: 11, color: '#64748b' }}>
+        <Text style={{ fontSize: 11, color: colores.textoSuave }}>q75 {q75.toFixed(1)}</Text>
+        <Text style={{ fontSize: 11, color: colores.textoSuave }}>máx {max}</Text>
+        <Text style={{ fontSize: 11, color: colores.textoSuave }}>
           μ {mean.toFixed(1)} ±{std.toFixed(1)}
         </Text>
       </View>
@@ -238,17 +240,18 @@ export function EdaSentenceBoxPlot({ stats }: { stats: SentenceStats }) {
 /* ---------- frecuencia de oraciones ---------- */
 
 export function EdaSentenceFreq({ data }: { data: SentenceFreqItem[] }) {
+  const { colores } = useTema();
   if (!data?.length) {
-    return <Text className="text-sm text-slate-500">Sin datos</Text>;
+    return <Text className="text-sm text-slate-500 dark:text-slate-400">Sin datos</Text>;
   }
   const etiquetas = data.map((d) =>
     d.bin_end !== undefined ? `${d.sentences}–${d.bin_end}` : `${d.sentences}`,
   );
   return (
-    <View className="w-full rounded-lg border border-slate-200 bg-white p-3">
+    <View className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
       <Text
         className="mb-2"
-        style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: '#64748b' }}
+        style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: colores.textoSuave }}
       >
         Frecuencia de oraciones por texto
       </Text>
@@ -275,9 +278,10 @@ const OPCIONES_METRICA = [
 type Metrica = (typeof OPCIONES_METRICA)[number]['valor'];
 
 export function EdaClassDistribution({ classStats }: { classStats: ClassStats[] }) {
+  const { colores } = useTema();
   const [metrica, setMetrica] = useState<Metrica>('all');
   if (!classStats?.length) {
-    return <Text className="text-sm text-slate-500">Sin datos</Text>;
+    return <Text className="text-sm text-slate-500 dark:text-slate-400">Sin datos</Text>;
   }
 
   const series: SerieBarra[] =
@@ -296,11 +300,11 @@ export function EdaClassDistribution({ classStats }: { classStats: ClassStats[] 
         ];
 
   return (
-    <View className="w-full rounded-lg border border-slate-200 bg-white p-3">
+    <View className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
       <View className="mb-2 flex-row items-center justify-between gap-2">
         <Text
           className="flex-1"
-          style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: '#64748b' }}
+          style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: colores.textoSuave }}
         >
           {metrica === 'all'
             ? 'Distribución por clase (tocá para valores)'
@@ -321,7 +325,7 @@ export function EdaClassDistribution({ classStats }: { classStats: ClassStats[] 
         alto={300}
         barraMax={metrica === 'all' ? 16 : 48}
       />
-      <Text className="mt-1 text-center text-[11px] text-slate-500">
+      <Text className="mt-1 text-center text-[11px] text-slate-500 dark:text-slate-400">
         {metrica === 'all' ? 'texto · palabras · oraciones · vocabulario' : `solo ${etiquetaSerie(metrica)} — escala ajustada`}
       </Text>
     </View>
@@ -331,9 +335,10 @@ export function EdaClassDistribution({ classStats }: { classStats: ClassStats[] 
 /* ---------- histograma por clase ---------- */
 
 export function EdaDistribution({ distribution }: { distribution: DistributionItem[] }) {
+  const { colores } = useTema();
   const [modo, setModo] = useState<'words' | 'sentences'>('words');
   if (!distribution?.length) {
-    return <Text className="text-sm text-slate-500">Sin datos</Text>;
+    return <Text className="text-sm text-slate-500 dark:text-slate-400">Sin datos</Text>;
   }
 
   const hist0 = distribution[0]?.[modo === 'words' ? 'words_histogram' : 'sentences_histogram'] ?? [];
@@ -347,23 +352,23 @@ export function EdaDistribution({ distribution }: { distribution: DistributionIt
   }));
 
   return (
-    <View className="w-full rounded-lg border border-slate-200 bg-white p-3">
+    <View className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
       <View className="mb-2 flex-row items-center justify-between">
         <Text
           className="flex-1"
-          style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: '#64748b' }}
+          style={{ fontFamily: 'Inter_500Medium', fontSize: 12, color: colores.textoSuave }}
         >
           Histograma por clase — {modo === 'words' ? 'palabras por texto' : 'oraciones por texto'}
         </Text>
-        <View className="flex-row rounded-md border border-slate-200 p-0.5">
+        <View className="flex-row rounded-md border border-slate-200 dark:border-slate-800 p-0.5">
           {(['words', 'sentences'] as const).map((m) => (
             <Pressable
               key={m}
               onPress={() => setModo(m)}
-              className={`rounded px-2 py-1 ${modo === m ? 'bg-slate-900' : ''}`}
+              className={`rounded px-2 py-1 ${modo === m ? 'bg-slate-900 dark:bg-slate-100' : ''}`}
             >
               <Text
-                className={`text-xs ${modo === m ? 'text-white' : 'text-slate-500'}`}
+                className={`text-xs ${modo === m ? 'text-white dark:text-slate-900' : 'text-slate-500 dark:text-slate-400'}`}
               >
                 {m === 'words' ? 'palabras' : 'oraciones'}
               </Text>
@@ -372,7 +377,7 @@ export function EdaDistribution({ distribution }: { distribution: DistributionIt
         </View>
       </View>
       <BarrasAgrupadas etiquetas={etiquetas} series={series} alto={280} barraMax={16} />
-      <Text className="mt-1 text-center text-[11px] text-slate-500">
+      <Text className="mt-1 text-center text-[11px] text-slate-500 dark:text-slate-400">
         tocá para conteo por clase
       </Text>
     </View>

@@ -12,6 +12,7 @@ import {
   type InformeResultado,
 } from '@/lib/report/types';
 import { descargarInforme } from '@/lib/report/descarga';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de TF-U-FRONTEND/components/views/reports-view.tsx.
 // En web los gráficos se renderizan ocultos y se serializan a SVG/PNG para
@@ -22,6 +23,7 @@ type Estado = 'idle' | 'generando' | 'listo';
 type Disponibilidad = { disponible: boolean; detalle: string };
 
 export default function GenerarInformes() {
+  const { colores } = useTema();
   const router = useRouter();
   const { datasetSeleccionado } = useDataset();
   const { tasks, startTask, adoptTask, consumeTask } = useJobs();
@@ -161,16 +163,16 @@ export default function GenerarInformes() {
           </View>
 
           {!datasetSeleccionado ? (
-            <View className="gap-3 rounded-xl border border-slate-200 bg-white p-4">
-              <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, color: '#64748b' }}>
+            <View className="gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+              <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, color: colores.textoSuave }}>
                 Seleccioná un dataset para generar un informe.
               </Text>
               <Boton titulo="Elegir dataset" onPress={() => router.push('/datasets')} />
             </View>
           ) : (
-            <View className="gap-4 rounded-xl border border-slate-200 bg-white p-4">
+            <View className="gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
               <View className="gap-1">
-                <Text style={{ fontFamily: FUENTE.semibold, fontSize: 15, color: '#0f172a' }}>
+                <Text style={{ fontFamily: FUENTE.semibold, fontSize: 15, color: colores.texto }}>
                   Nuevo informe
                 </Text>
                 <Text
@@ -178,7 +180,7 @@ export default function GenerarInformes() {
                     fontFamily: FUENTE.regular,
                     fontSize: 13,
                     lineHeight: 19,
-                    color: '#64748b',
+                    color: colores.textoSuave,
                   }}
                 >
                   Solo se ofrecen los análisis ya realizados para el dataset seleccionado. El
@@ -186,9 +188,9 @@ export default function GenerarInformes() {
                 </Text>
               </View>
 
-              <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, color: '#64748b' }}>
+              <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, color: colores.textoSuave }}>
                 Dataset:{' '}
-                <Text style={{ fontFamily: FUENTE.semibold, color: '#0f172a' }}>
+                <Text style={{ fontFamily: FUENTE.semibold, color: colores.texto }}>
                   {datasetSeleccionado}
                 </Text>
               </Text>
@@ -198,7 +200,7 @@ export default function GenerarInformes() {
               {cargando ? (
                 <View className="flex-row items-center gap-2">
                   <ActivityIndicator size="small" />
-                  <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, color: '#64748b' }}>
+                  <Text style={{ fontFamily: FUENTE.regular, fontSize: 14, color: colores.textoSuave }}>
                     Buscando análisis realizados…
                   </Text>
                 </View>
@@ -218,17 +220,17 @@ export default function GenerarInformes() {
                         activeOpacity={0.7}
                         className={`flex-row items-center gap-2.5 rounded-lg border px-3 py-2.5 ${
                           !disponible
-                            ? 'border-slate-200 opacity-50'
+                            ? 'border-slate-200 dark:border-slate-800 opacity-50'
                             : activo
-                              ? 'border-indigo-600 bg-indigo-50'
-                              : 'border-slate-200'
+                              ? 'border-primario bg-primario-50 dark:bg-primario-950'
+                              : 'border-slate-200 dark:border-slate-800'
                         }`}
                       >
                         <View
                           className={`size-4 items-center justify-center rounded border ${
                             activo && disponible
-                              ? 'border-indigo-600 bg-indigo-600'
-                              : 'border-slate-300'
+                              ? 'border-primario bg-primario dark:bg-primario-500'
+                              : 'border-slate-300 dark:border-slate-700'
                           }`}
                         >
                           {activo && disponible && <Check size={11} color="#fff" />}
@@ -238,7 +240,7 @@ export default function GenerarInformes() {
                             style={{
                               fontFamily: FUENTE.medium,
                               fontSize: 14,
-                              color: '#0f172a',
+                              color: colores.texto,
                             }}
                           >
                             {s.titulo}
@@ -248,7 +250,7 @@ export default function GenerarInformes() {
                             style={{
                               fontFamily: FUENTE.regular,
                               fontSize: 12,
-                              color: '#64748b',
+                              color: colores.textoSuave,
                             }}
                           >
                             {disponible
@@ -258,14 +260,14 @@ export default function GenerarInformes() {
                         </View>
                         <View
                           className={`rounded-full px-2 py-0.5 ${
-                            disponible ? 'bg-indigo-600' : 'border border-slate-300'
+                            disponible ? 'bg-primario dark:bg-primario-500' : 'border border-slate-300 dark:border-slate-700'
                           }`}
                         >
                           <Text
                             style={{
                               fontFamily: FUENTE.regular,
                               fontSize: 11,
-                              color: disponible ? '#fff' : '#475569',
+                              color: disponible ? '#fff' : colores.textoMedio,
                             }}
                           >
                             {disponible ? 'Listo' : 'Falta'}
@@ -282,8 +284,8 @@ export default function GenerarInformes() {
                 disabled={seleccion.length === 0 || estado === 'generando'}
                 className={`flex-row items-center justify-center gap-2 rounded-xl px-4 py-3.5 ${
                   seleccion.length === 0 || estado === 'generando'
-                    ? 'bg-indigo-300'
-                    : 'bg-indigo-600'
+                    ? 'bg-primario-300 dark:bg-primario-900'
+                    : 'bg-primario dark:bg-primario-500'
                 }`}
               >
                 {estado === 'generando' ? (
@@ -299,28 +301,28 @@ export default function GenerarInformes() {
           )}
 
           {informeVisible && informe && (
-            <View className="gap-3 rounded-xl border border-slate-200 bg-white p-4">
-              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 15, color: '#0f172a' }}>
+            <View className="gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+              <Text style={{ fontFamily: FUENTE.semibold, fontSize: 15, color: colores.texto }}>
                 Informe generado
               </Text>
-              <View className="flex-row items-center gap-3 rounded-lg border border-slate-200 p-3">
-                <FileDown size={16} color="#4f46e5" />
+              <View className="flex-row items-center gap-3 rounded-lg border border-slate-200 dark:border-slate-800 p-3">
+                <FileDown size={16} color={colores.primario} />
                 <View className="min-w-0 flex-1">
                   <Text
                     numberOfLines={1}
-                    style={{ fontFamily: FUENTE.medium, fontSize: 14, color: '#0f172a' }}
+                    style={{ fontFamily: FUENTE.medium, fontSize: 14, color: colores.texto }}
                   >
                     {informe.filename}
                   </Text>
                   <Text
-                    style={{ fontFamily: FUENTE.regular, fontSize: 12, color: '#64748b' }}
+                    style={{ fontFamily: FUENTE.regular, fontSize: 12, color: colores.textoSuave }}
                   >
                     PDF · {seleccion.length} secciones
                   </Text>
                 </View>
-                <View className="rounded-full bg-slate-100 px-2 py-0.5">
+                <View className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5">
                   <Text
-                    style={{ fontFamily: FUENTE.regular, fontSize: 11, color: '#475569' }}
+                    style={{ fontFamily: FUENTE.regular, fontSize: 11, color: colores.textoMedio }}
                   >
                     PDF
                   </Text>
@@ -330,7 +332,7 @@ export default function GenerarInformes() {
                   accessibilityLabel="Descargar informe"
                   className="p-2"
                 >
-                  <Download size={18} color="#0f172a" />
+                  <Download size={18} color={colores.texto} />
                 </TouchableOpacity>
               </View>
             </View>

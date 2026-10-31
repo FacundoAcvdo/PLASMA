@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
+import { useTema } from '@/context/tema-context';
 
 // Espejo de la línea de tiempo horizontal de
 // TF-U-FRONTEND/components/views/{word-evolution,sentiment-time}-view.tsx.
@@ -15,6 +16,7 @@ const PAD = 64;
 export type TimelineItem = { key: string; content: ReactNode };
 
 export function EvolutionTimeline({ items = [] }: { items?: TimelineItem[] }) {
+  const { colores } = useTema();
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <View style={{ height: ALTO }}>
@@ -26,7 +28,7 @@ export function EvolutionTimeline({ items = [] }: { items?: TimelineItem[] }) {
             right: 0,
             top: CENTRO - 0.5,
             height: 1,
-            backgroundColor: '#e2e8f0',
+            backgroundColor: colores.borde,
           }}
         />
 
@@ -37,7 +39,7 @@ export function EvolutionTimeline({ items = [] }: { items?: TimelineItem[] }) {
               <View key={item.key} style={{ width: COL_W, height: ALTO }}>
                 {/* punto sobre el eje */}
                 <View
-                  className="rounded-full border-2 border-indigo-600 bg-white"
+                  className="rounded-full border-2 border-primario dark:border-primario-400 bg-white dark:bg-slate-900"
                   style={{
                     position: 'absolute',
                     left: COL_W / 2 - 8,
@@ -54,7 +56,7 @@ export function EvolutionTimeline({ items = [] }: { items?: TimelineItem[] }) {
                     left: COL_W / 2 - 0.5,
                     width: 1,
                     height: 48,
-                    backgroundColor: '#e2e8f0',
+                    backgroundColor: colores.borde,
                     ...(esArriba ? { bottom: CENTRO } : { top: CENTRO }),
                   }}
                 />
@@ -80,8 +82,8 @@ export function EvolutionTimeline({ items = [] }: { items?: TimelineItem[] }) {
                       borderLeftColor: 'transparent',
                       borderRightColor: 'transparent',
                       ...(esArriba
-                        ? { bottom: -6, borderBottomWidth: 6, borderBottomColor: '#e2e8f0' }
-                        : { top: -6, borderTopWidth: 6, borderTopColor: '#e2e8f0' }),
+                        ? { bottom: -6, borderBottomWidth: 6, borderBottomColor: colores.borde }
+                        : { top: -6, borderTopWidth: 6, borderTopColor: colores.borde }),
                     }}
                   />
                   <View
@@ -95,8 +97,8 @@ export function EvolutionTimeline({ items = [] }: { items?: TimelineItem[] }) {
                       borderLeftColor: 'transparent',
                       borderRightColor: 'transparent',
                       ...(esArriba
-                        ? { bottom: -4, borderBottomWidth: 6, borderBottomColor: '#ffffff' }
-                        : { top: -4, borderTopWidth: 6, borderTopColor: '#ffffff' }),
+                        ? { bottom: -4, borderBottomWidth: 6, borderBottomColor: colores.superficie }
+                        : { top: -4, borderTopWidth: 6, borderTopColor: colores.superficie }),
                     }}
                   />
 

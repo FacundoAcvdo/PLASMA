@@ -44,7 +44,11 @@ export function Toaster() {
 
   if (!aviso) return null;
   const fondo =
-    aviso.kind === 'success' ? 'bg-emerald-600' : aviso.kind === 'info' ? 'bg-indigo-600' : 'bg-red-600';
+    aviso.kind === 'success'
+      ? 'bg-emerald-600 dark:bg-emerald-500'
+      : aviso.kind === 'info'
+        ? 'bg-primario dark:bg-primario-500'
+        : 'bg-red-600 dark:bg-red-500';
 
   return (
     <View
