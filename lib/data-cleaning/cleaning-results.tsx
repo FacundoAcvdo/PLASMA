@@ -164,11 +164,6 @@ export function CleaningResult({
               icon={<Hash className="h-5 w-5" />}
             />
 
-            <StatCard
-              label="Entidades anonimizadas"
-              value={stats.entities_anonymized}
-              icon={<Users className="h-5 w-5" />}
-            />
 
             <StatCard
               label="Stopwords eliminadas"

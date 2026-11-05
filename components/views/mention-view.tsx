@@ -371,18 +371,24 @@ export function MentionView() {
                         <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                         <SelectContent><SelectGroup>
                           <SelectItem value="auto">Auto (por idioma y equipo)</SelectItem>
-                          <SelectItem value="es_base">Español grande</SelectItem>
+                          <SelectItem value="es_base">Español</SelectItem>
                           <SelectItem value="en">Inglés</SelectItem>
                         </SelectGroup></SelectContent>
                       </Select>
                     </div>
-                    <label className="flex items-center gap-2 text-xs cursor-pointer">
-                      <Checkbox
-                        checked={bertRapido}
-                        onCheckedChange={(v) => setBertRapido(v === true)}
-                      />
-                      Modo rápido (solo capa final, mucho más veloz)
-                    </label>
+                    <div className="flex flex-col gap-1">
+                      <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+                        <Checkbox
+                          checked={bertRapido}
+                          onCheckedChange={(v) => setBertRapido(v === true)}
+                        />
+                        Entrenamiento rápido
+                      </label>
+                      <p className="text-xs text-muted-foreground">
+                        Congela el modelo de lenguaje y entrena solo el clasificador final:
+                        mucho más veloz y con menos memoria, a costa de menor precisión.
+                      </p>
+                    </div>
                   </div>
                 )}
                 {modificarParams && modeloSeleccionado === 'Logistic Regression' && (

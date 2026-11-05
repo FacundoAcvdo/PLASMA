@@ -9,8 +9,7 @@ export type CleaningOperation =
   | "handle_emojis"
   | "remove_punctuation"
   | "remove_stopwords"
-  | "lemmatization"
-  | "anonymization";
+  | "lemmatization";
 
 export type EmojiStrategy =
   | "keep"
@@ -57,7 +56,6 @@ export interface CleaningStats {
   stopwords_removed: number;
   lemmas_processed: number;
   truncated_words: number;
-  entities_anonymized: number;
 }
 
 export interface CleaningPreview {

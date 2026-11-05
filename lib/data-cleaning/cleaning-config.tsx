@@ -119,11 +119,6 @@ const OPERATIONS: OperationOption[] = [
       "Reduce las palabras a su raíz (stemming). " +
       "No se puede combinar con Lematización.",
   },
-  {
-    value: "anonymization",
-    label: "Anonimización",
-    description: "Reemplaza emails, teléfonos e IPs.",
-  },
 ];
 
 const EMOJI_OPTIONS: {
