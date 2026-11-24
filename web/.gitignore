@@ -8,7 +8,4 @@ node_modules
 .next/
 .DS_Store
 
-Dockerfile
-.dockerignore
-
 tsconfig.tsbuildinfo

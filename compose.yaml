@@ -1,0 +1,184 @@
+services:
+  frontend:
+    build:
+      context: ./web
+    ports:
+      - "6001:6001"
+    networks:
+      - microservicios
+
+  auth-service:
+    build:
+      context: ./backend/auth-service
+    expose:
+      - "5050"
+    env_file:
+      - ./backend/auth-service/.env
+    networks:
+      - microservicios
+
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+    ports:
+      - "7500:7500"
+    env_file:
+      - ./backend/api-gateway/.env
+    networks:
+      - microservicios
+
+  analysis-service:
+    build:
+      context: ./backend/analysis-service
+    expose:
+      - "8080"
+    env_file:
+      - ./backend/analysis-service/.env
+    volumes:
+      - ./data/hf_cache:/root/.cache/huggingface
+    depends_on:
+      - chroma-service
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - microservicios
+
+  dataset-service:
+    build:
+      context: ./backend/dataset-service
+    expose:
+      - "8082"
+    env_file:
+      - ./backend/dataset-service/.env
+    volumes:
+      - ./data/hf_cache:/root/.cache/huggingface
+    depends_on:
+      - chroma-service
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - microservicios
+
+  classification-service:
+    build:
+      context: ./backend/classification-service
+    expose:
+      - "8087"
+    env_file:
+      - ./backend/classification-service/.env
+    volumes:
+      - ./data/hf_cache:/root/.cache/huggingface
+      - ./data/modelos:/app/data/modelos
+    depends_on:
+      - chroma-service
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - microservicios
+
+  rag-service:
+    build:
+      context: ./backend/rag-service
+    expose:
+      - "8088"
+    env_file:
+      - ./backend/rag-service/.env
+    volumes:
+      - ./data/hf_cache:/root/.cache/huggingface
+      - ./data/rag_docs:/app/data/rag_docs:ro
+    depends_on:
+      - chroma-service
+      - ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - microservicios
+
+  ollama:
+    image: ollama/ollama:latest
+    expose:
+      - "11434"
+    volumes:
+      - ./data/ollama:/root/.ollama
+    environment:
+      OLLAMA_KEEP_ALIVE: 5m
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - microservicios
+
+  cleaning-service:
+    build:
+      context: ./backend/cleaning-service
+    expose:
+      - "8089"
+    env_file:
+      - ./backend/cleaning-service/.env
+    volumes:
+      - ./data/temp_downloads:/app/data/temp_downloads
+    depends_on:
+      - chroma-service
+    networks:
+      - microservicios
+
+  evolution-service:
+    build:
+      context: ./backend/evolution-service
+    expose:
+      - "8090"
+    env_file:
+      - ./backend/evolution-service/.env
+    volumes:
+      - ./data/hf_cache:/root/.cache/huggingface
+    depends_on:
+      - chroma-service
+    networks:
+      - microservicios
+
+  report-service:
+    build:
+      context: ./backend/report-service
+    expose:
+      - "8092"
+    env_file:
+      - ./backend/report-service/.env
+    networks:
+      - microservicios
+
+  chroma-service:
+    image: chromadb/chroma
+    expose:
+      - "8000"
+    volumes:
+      - ./data/chroma-data:/data
+    networks:
+      - microservicios
+
+networks:
+  microservicios:
+    driver: bridge
