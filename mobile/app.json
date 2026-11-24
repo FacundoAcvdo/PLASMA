@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "PLASMA",
+    "slug": "pi-unsl",
+    "scheme": "plasma",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.unsl.plasma",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e4cb0a86-fd14-4371-b518-e91c8431e1e4"
+      }
+    },
+    "owner": "unsl",
+    "plugins": [
+      "expo-sharing",
+      "expo-system-ui",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true,
+            "enableMinifyInReleaseBuilds": false
+          }
+        }
+      ]
+    ]
+  }
+}
