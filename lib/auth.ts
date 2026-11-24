@@ -1,7 +1,13 @@
 import { apiFetch } from './api-fetch';
 import { getToken, setToken } from './api-fetch';
 
-export type SessionUser = { id: string; email: string; role?: string };
+export type SessionUser = {
+  id: string;
+  email: string;
+  role?: string;
+  terms_accepted?: boolean;
+  terms_accepted_at?: string | null;
+};
 
 type LoginResponse = {
   user?: SessionUser;
@@ -41,6 +47,14 @@ export async function me(): Promise<SessionUser | null> {
   } catch {
     return null;
   }
+}
+
+export async function acceptTerms(): Promise<SessionUser | null> {
+  const data = await apiFetch<{ user?: SessionUser }>(
+    '/auth/terms/accept',
+    { method: 'POST' },
+  );
+  return data?.user ?? null;
 }
 
 export { getToken };

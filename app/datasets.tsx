@@ -41,7 +41,7 @@ export default function Datasets() {
         }}
       />
       <View className="mt-2">
-        <Boton titulo="Cargar dataset" onPress={() => router.push('/upload')} />
+        <Boton titulo="Cargar un nuevo dataset" onPress={() => router.push('/upload')} />
       </View>
     </Screen>
   );

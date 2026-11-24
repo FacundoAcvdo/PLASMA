@@ -3,6 +3,7 @@ import { fetch as expoFetch } from 'expo/fetch';
 import { API_BASE } from './config';
 import { NETWORK_ERROR_MESSAGE, errorMessageForStatus } from './api-errors';
 import { toast } from './toast';
+import { notifyTermsRequired } from './terms-events';
 
 const TOKEN_KEY = 'access_token';
 
@@ -62,6 +63,20 @@ export async function apiFetch<T = unknown>(
   }
 
   if (!respuesta.ok) {
+    if (respuesta.status === 403) {
+      try {
+        const clon = respuesta.clone();
+        const textoError = await clon.text();
+        if (
+          textoError.toLowerCase().includes('términos') ||
+          textoError.toLowerCase().includes('terminos')
+        ) {
+          notifyTermsRequired();
+        }
+      } catch {
+        // ignorar error de clonación
+      }
+    }
     const ignorar = options?.silent || (options?.ignoreNotFound && respuesta.status === 404);
     if (!ignorar) toast.error(errorMessageForStatus(respuesta.status));
     throw new ApiError(respuesta.status, errorMessageForStatus(respuesta.status));
@@ -103,6 +118,20 @@ export async function apiFetchFormData<T = unknown>(
   }
 
   if (!respuesta.ok) {
+    if (respuesta.status === 403) {
+      try {
+        const clon = respuesta.clone();
+        const textoError = await clon.text();
+        if (
+          textoError.toLowerCase().includes('términos') ||
+          textoError.toLowerCase().includes('terminos')
+        ) {
+          notifyTermsRequired();
+        }
+      } catch {
+        // ignorar error de clonación
+      }
+    }
     const ignorar = options?.silent || (options?.ignoreNotFound && respuesta.status === 404);
     if (!ignorar) toast.error(errorMessageForStatus(respuesta.status));
     throw new ApiError(respuesta.status, errorMessageForStatus(respuesta.status));

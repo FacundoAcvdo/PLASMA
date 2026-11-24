@@ -4,12 +4,13 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  Switch,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { AlertCircle, FileText, Hash, Layers, RotateCw, Settings2, X } from 'lucide-react-native';
+import { AlertCircle, FileText, Hash, Layers, RotateCw, Settings2, Shield, X } from 'lucide-react-native';
 import { useDataset } from '@/context/dataset-context';
 import { useJobs } from '@/context/jobs-context';
 import { apiFetch } from '@/lib/api-fetch';
@@ -167,6 +168,7 @@ export default function Topicos() {
   const [topics, setTopics] = useState<TopicModelingResult | null>(null);
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
   const [maxTopics, setMaxTopics] = useState<number>(20);
+  const [modoPrivacidad, setModoPrivacidad] = useState<boolean>(false);
 
   const { datasetSeleccionado } = useDataset();
   const { tasks, startTask, adoptTask, consumeTask } = useJobs();
@@ -186,6 +188,7 @@ export default function Topicos() {
       body: {
         dataset: datasetSeleccionado,
         max_topics: maxTopics,
+        privacy_mode: modoPrivacidad,
       },
       successMessage: 'Tópicos generados correctamente.',
     }).catch(() => setEstado('idle'));
@@ -312,6 +315,37 @@ export default function Topicos() {
                 onCambiar={(v) => setMaxTopics(Number(v))}
                 deshabilitado={estado === 'running'}
               />
+            </View>
+          </View>
+
+          {/* Modo privacidad */}
+          <View className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+            <View className="flex-row items-center justify-between gap-3">
+              <View className="flex-1 flex-row items-center gap-3 min-w-0">
+                <View className="size-9 items-center justify-center rounded-lg bg-primario-50 dark:bg-primario-950 shrink-0">
+                  <Shield size={16} color={colores.primario} />
+                </View>
+                <View className="flex-1 min-w-0">
+                  <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 14, color: colores.texto }}>
+                    Modo privacidad
+                  </Text>
+                  <Text className="text-xs text-slate-500 dark:text-slate-400">
+                    {modoPrivacidad
+                      ? 'Privacidad: Qwen3 local · La generación de títulos con el modelo local puede demorar más tiempo.'
+                      : 'Modelo configurado del sistema'}
+                  </Text>
+                </View>
+              </View>
+              <View className="flex-row items-center gap-2 shrink-0">
+                <Switch
+                  value={modoPrivacidad}
+                  onValueChange={setModoPrivacidad}
+                  disabled={estado === 'running'}
+                />
+                <Text className="text-xs text-slate-500 dark:text-slate-400">
+                  Privacidad
+                </Text>
+              </View>
             </View>
           </View>
 

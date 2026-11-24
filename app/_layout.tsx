@@ -19,6 +19,7 @@ import { TemaProvider, useTema } from '@/context/tema-context';
 import { MenuLateral } from '@/components/MenuLateral';
 import { LogoHeader } from '@/components/ui';
 import { Toaster } from '@/components/Toaster';
+import { TermsDialog } from '@/components/terms-dialog';
 import { SplashScreen } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -66,6 +67,7 @@ function Navegacion() {
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colores.fondo }}>
       <StatusBar style={oscuro ? 'light' : 'dark'} />
+      <TermsDialog />
       <Drawer
         drawerContent={({ navigation }) => <MenuLateral navigation={navigation} />}
         screenOptions={{

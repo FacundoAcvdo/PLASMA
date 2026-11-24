@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, Switch, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Modal, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { File as FSFile, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import { Download, ShieldCheck } from 'lucide-react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useJobs } from '@/context/jobs-context';
+import { toast } from '@/lib/toast';
 import { archivoDesdeUri, bytesATexto, type ArchivoEntrada } from '@/lib/dataset/archivo';
 import JSZip from 'jszip';
 import {
@@ -27,6 +30,31 @@ type PosiblePreview = DatasetPreviewData & {
   convertido?: ArchivoEntrada & {
     materializar: () => Promise<{ uri: string; nombre: string }>;
   };
+};
+
+type DiccionarioAnonimizacion = {
+  personas?: Record<string, string[]>;
+  emails?: Record<string, string>;
+  telefonos?: Record<string, string>;
+  ips?: Record<string, string>;
+  urls?: Record<string, string>;
+};
+
+type EstadisticasAnonimizacion = {
+  documentos?: number;
+  documentos_modificados?: number;
+  remitentes?: number;
+  menciones_remitentes?: number;
+  emails?: number;
+  telefonos?: number;
+  ips?: number;
+  urls?: number;
+};
+
+type UploadJobResult = {
+  filename?: string;
+  anonimizacion?: EstadisticasAnonimizacion;
+  diccionario_anonimizacion?: DiccionarioAnonimizacion;
 };
 
 const COLUMNAS_FIJAS: Record<
@@ -145,6 +173,11 @@ export default function Upload() {
   const [estado, setEstado] = useState<'idle' | 'cargando' | 'listo'>('idle');
   const [cargandoPreview, setCargandoPreview] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resultadoAnonimizacion, setResultadoAnonimizacion] = useState<{
+    filename: string;
+    stats: EstadisticasAnonimizacion;
+    diccionario: DiccionarioAnonimizacion;
+  } | null>(null);
 
   const [columnaTexto, setColumnaTexto] = useState('');
   const [columnaClase, setColumnaClase] = useState('');
@@ -191,6 +224,12 @@ export default function Upload() {
       setEstado('cargando');
     } else if (task.status === 'succeeded') {
       queryClient.invalidateQueries({ queryKey: ['datasets'] });
+      const res = (task.result ?? {}) as UploadJobResult;
+      setResultadoAnonimizacion({
+        filename: res.filename || nombreArchivo || 'dataset',
+        stats: res.anonimizacion ?? {},
+        diccionario: res.diccionario_anonimizacion ?? {},
+      });
       setEstado('listo');
       consumeTask(task.key);
     } else {
@@ -215,6 +254,7 @@ export default function Upload() {
     setError(null);
     setPreview(null);
     setEstado('idle');
+    setResultadoAnonimizacion(null);
     setFormatoAutomatico(null);
     setConvertido(null);
     setFormatoOriginal(obtenerFormatoOriginal(entrada.nombre));
@@ -340,6 +380,7 @@ export default function Upload() {
     setWhatsappLocale('DMY');
     setEspecialPendiente(null);
     setEstado('idle');
+    setResultadoAnonimizacion(null);
   }
 
   async function elegirArchivo() {
@@ -399,10 +440,42 @@ export default function Upload() {
     return 'csv';
   }
 
+  async function descargarDiccionarioAnonimizacion() {
+    if (!resultadoAnonimizacion) return;
+    const { diccionario, filename } = resultadoAnonimizacion;
+    if (Object.keys(diccionario).length === 0) return;
+
+    try {
+      const baseName = filename.replace(/\.[^/.]+$/, '');
+      const nombreArchivoJson = `diccionario_anonimizacion_${baseName}.json`;
+      const jsonContent = JSON.stringify(diccionario, null, 2);
+
+      const archivoJson = new FSFile(Paths.cache, nombreArchivoJson);
+      try {
+        archivoJson.create();
+      } catch {
+        // ya existe: se sobrescribe
+      }
+      await archivoJson.write(jsonContent);
+
+      if (!(await Sharing.isAvailableAsync())) {
+        toast.error('No se puede guardar el archivo en este dispositivo.');
+        return;
+      }
+      await Sharing.shareAsync(archivoJson.uri, {
+        mimeType: 'application/json',
+        dialogTitle: 'Descargar diccionario de anonimización',
+      });
+    } catch {
+      toast.error('No se pudo descargar el diccionario.');
+    }
+  }
+
   async function cargar() {
     if (!archivo || estado !== 'idle') return;
     setEstado('cargando');
     setError(null);
+    setResultadoAnonimizacion(null);
     try {
       let archivoAEnviar: { uri: string; nombre: string };
       if (convertido) {
@@ -666,13 +739,51 @@ export default function Upload() {
           </View>
         )}
         {estado === 'listo' && (
-          <CajaExito>
-            <Text className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Dataset cargado correctamente</Text>
-            <Text className="text-sm text-slate-500 dark:text-slate-400">
-              {preview?.totalRows.toLocaleString('es')} registros · {preview?.columns.length} columnas detectadas.
-            </Text>
+          <View className="gap-3">
+            <CajaExito>
+              <Text className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                Dataset cargado correctamente
+              </Text>
+              <Text className="text-sm text-slate-500 dark:text-slate-400">
+                {preview?.totalRows.toLocaleString('es')} registros · {preview?.columns.length} columnas detectadas.
+              </Text>
+            </CajaExito>
+
+            {resultadoAnonimizacion && (
+              <View className="gap-2.5 rounded-xl border border-lime-500/35 bg-lime-500/10 p-4">
+                <View className="flex-row items-center gap-2">
+                  <ShieldCheck size={18} color={colores.exito} />
+                  <Text style={{ fontFamily: 'Inter_600SemiBold', fontSize: 14, color: colores.texto }}>
+                    Anonimización del dataset
+                  </Text>
+                </View>
+
+                {Object.keys(resultadoAnonimizacion.diccionario).length > 0 ? (
+                  <>
+                    <Text className="text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+                      Se anonimizaron datos sensibles durante la carga. Podés descargar el diccionario de equivalencias ahora (solo estará disponible hasta que cargues otro dataset).
+                    </Text>
+
+                    <TouchableOpacity
+                      onPress={descargarDiccionarioAnonimizacion}
+                      className="flex-row items-center justify-center gap-2 rounded-lg border border-lime-600/30 bg-lime-500/20 py-2.5 px-4"
+                    >
+                      <Download size={16} color={colores.texto} />
+                      <Text style={{ fontFamily: 'Inter_500Medium', fontSize: 13, color: colores.texto }}>
+                        Descargar diccionario (.json)
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <Text className="text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                    No se detectaron datos sensibles para anonimizar (el dataset ya se encontraba anonimizado o sin información personal identificable).
+                  </Text>
+                )}
+              </View>
+            )}
+
             <Boton titulo="Ver datasets" onPress={() => router.replace('/datasets')} />
-          </CajaExito>
+          </View>
         )}
         </View>
       </KeyboardAwareScrollView>

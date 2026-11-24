@@ -12,9 +12,10 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import { MessageCircle, Plus, Send } from 'lucide-react-native';
+import { MessageCircle, Plus, Send, Shield } from 'lucide-react-native';
 import { Renderer, useMarkdown, type MarkedStyles } from 'react-native-marked';
 import { ApiError, apiFetch } from '@/lib/api-fetch';
+import { toast } from '@/lib/toast';
 import { Boton, FUENTE, Screen } from '@/components/ui';
 import { useTema } from '@/context/tema-context';
 import type { Colores } from '@/lib/tema';
@@ -258,7 +259,9 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
           ...(conDataset ? { dataset_name: datasetName } : {}),
         }),
       });
-      setModoPrivacidad(Boolean(data.privacy_mode));
+      const nuevoModo = typeof data?.privacy_mode === 'boolean' ? data.privacy_mode : enabled;
+      setModoPrivacidad(nuevoModo);
+      toast.success(nuevoModo ? 'Modo privacidad activado' : 'Modo estándar activado');
     } catch {
       // apiFetch ya avisó del error.
     } finally {
@@ -316,6 +319,7 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
       }
       setMensajes((m) => [...m, data.respuesta]);
       if (data.titulo) setTitulo(data.titulo);
+      if (typeof data.privacy_mode === 'boolean') setModoPrivacidad(data.privacy_mode);
       setEscribiendo(false);
     } catch (e) {
       const esRed = e instanceof ApiError && e.status === 0;
@@ -362,36 +366,61 @@ export function PanelChat({ datasetName = null }: { datasetName?: string | null 
           </View>
         ) : (
           <View className="flex-1">
-            <View className="flex-row items-center justify-between gap-2 pb-3">
-              <Text
-                numberOfLines={1}
-                style={{ flex: 1, fontFamily: FUENTE.medium, fontSize: 14, color: colores.texto }}
-              >
-                {tituloVisible}
-              </Text>
-              <View className="items-center">
-                <Switch
-                  value={modoPrivacidad}
-                  onValueChange={cambiarModoPrivacidad}
-                  disabled={cambiandoModo || escribiendo}
-                />
-                <Text style={{ fontFamily: FUENTE.regular, fontSize: 10, color: colores.textoSuave }}>
-                  {modoPrivacidad ? 'Qwen3 local' : 'Estándar'}
+            {/* Cabecera del chat y control de modo privacidad (toggle como en topic modeling) */}
+            <View className="gap-2 pb-3">
+              <View className="flex-row items-center justify-between gap-2">
+                <Text
+                  numberOfLines={1}
+                  style={{ flex: 1, fontFamily: FUENTE.semibold, fontSize: 15, color: colores.texto }}
+                >
+                  {tituloVisible}
                 </Text>
+                <TouchableOpacity
+                  onPress={iniciarNuevoChat}
+                  disabled={cargandoChat || escribiendo}
+                  className={`flex-row items-center rounded-lg border px-3 py-1.5 ${
+                    cargandoChat || escribiendo
+                      ? 'border-slate-200 dark:border-slate-800'
+                      : 'border-slate-300 dark:border-slate-700'
+                  }`}
+                  style={{ gap: 6, opacity: cargandoChat || escribiendo ? 0.5 : 1 }}
+                >
+                  <Plus size={16} color={colores.texto} />
+                  <Text style={{ fontFamily: FUENTE.medium, fontSize: 13, color: colores.texto }}>
+                    Nueva sesión
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={iniciarNuevoChat}
-                disabled={cargandoChat || escribiendo}
-                className={`flex-row items-center rounded-lg border px-3 py-1.5 ${
-                  cargandoChat || escribiendo ? 'border-slate-200 dark:border-slate-800' : 'border-slate-300 dark:border-slate-700'
-                }`}
-                style={{ gap: 6, opacity: cargandoChat || escribiendo ? 0.5 : 1 }}
-              >
-                <Plus size={16} color={colores.texto} />
-                <Text style={{ fontFamily: FUENTE.medium, fontSize: 13, color: colores.texto }}>
-                  Nueva sesión
-                </Text>
-              </TouchableOpacity>
+
+              {/* Modo privacidad con toggle como en topic modeling */}
+              <View className="flex-row items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
+                <View className="flex-1 flex-row items-center gap-2.5 min-w-0">
+                  <View className="size-8 items-center justify-center rounded-lg bg-primario-50 dark:bg-primario-950 shrink-0">
+                    <Shield size={16} color={colores.primario} />
+                  </View>
+                  <View className="flex-1 min-w-0">
+                    <Text style={{ fontFamily: FUENTE.medium, fontSize: 13, color: colores.texto }}>
+                      Modo privacidad
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={{ fontFamily: FUENTE.regular, fontSize: 11, color: colores.textoSuave }}
+                    >
+                      {modoPrivacidad ? 'Privacidad: Qwen3 local' : 'Modelo configurado del sistema'}
+                    </Text>
+                  </View>
+                </View>
+                <View className="flex-row items-center gap-1.5 shrink-0">
+                  <Switch
+                    value={modoPrivacidad}
+                    onValueChange={cambiarModoPrivacidad}
+                    disabled={cambiandoModo || escribiendo}
+                  />
+                  <Text style={{ fontFamily: FUENTE.regular, fontSize: 12, color: colores.textoSuave }}>
+                    Privacidad
+                  </Text>
+                </View>
+              </View>
             </View>
 
             <View className="flex-1 rounded-2xl border border-slate-200 dark:border-slate-800">
